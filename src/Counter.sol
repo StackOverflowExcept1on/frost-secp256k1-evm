@@ -1,14 +1,21 @@
 // SPDX-License-Identifier: UNLICENSED
 pragma solidity ^0.8.28;
 
-contract Counter {
-    uint256 public number;
+import {FROST} from "./FROST.sol";
 
-    function setNumber(uint256 newNumber) public {
-        number = newNumber;
+contract Counter {
+    uint256 publicKeyX;
+    uint256 publicKeyY;
+
+    constructor() payable {
+        publicKeyX = 0xbc5e83c1f1b03cbb9cc4bab889e6a970e1f4c5c65c5f89e8d9723d73b726cc3e;
+        publicKeyY = 0xdbed58a60a09b1bab5b9aa6601f6b0b71b3f7ad9172d110f4af1904fbdbc6a34;
     }
 
-    function increment() public {
-        number++;
+    function verifySignature(uint256 signatureRX, uint256 signatureRY, uint256 signatureZ, bytes32 message)
+        external
+        payable
+    {
+        require(FROST.verifySignature(publicKeyX, publicKeyY, signatureRX, signatureRY, signatureZ, message));
     }
 }
