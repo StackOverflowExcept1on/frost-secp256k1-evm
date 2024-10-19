@@ -16,6 +16,10 @@ library FROST {
     uint256 internal constant F_2_192 = 0x0000000000000001000000000000000000000000000000000000000000000000;
     uint256 internal constant MASK_64 = 0x000000000000000000000000000000000000000000000000FFFFFFFFFFFFFFFF;
 
+    function isValidPublicKey(uint256 publicKeyX, uint256 publicKeyY) internal pure returns (bool) {
+        return Schnorr.isValidPublicKey(publicKeyX, publicKeyY);
+    }
+
     function computateChallenge(
         uint256 publicKeyX,
         uint256 publicKeyY,
@@ -68,8 +72,23 @@ library FROST {
         uint256 signatureZ,
         bytes32 message
     ) internal view returns (bool) {
+        // NOTE: publicKeyX and publicKeyY must be checked before calling this function
+
+        if (!Schnorr.isValidSignatureR(signatureRX, signatureRY)) {
+            return false;
+        }
+
+        if (!Schnorr.isValidMultiplier(signatureZ)) {
+            return false;
+        }
+
         (uint256 memPtr, uint256 challenge) =
             computateChallenge(publicKeyX, publicKeyY, signatureRX, signatureRY, message);
+
+        if (!Schnorr.isValidMultiplier(challenge)) {
+            return false;
+        }
+
         return Schnorr.verifySignature(memPtr, publicKeyX, publicKeyY, signatureRX, signatureRY, signatureZ, challenge);
     }
 }

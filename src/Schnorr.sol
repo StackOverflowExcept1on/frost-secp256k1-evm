@@ -5,6 +5,19 @@ import {ECDSA} from "./ECDSA.sol";
 import {Secp256k1} from "./Secp256k1.sol";
 
 library Schnorr {
+    function isValidPublicKey(uint256 publicKeyX, uint256 publicKeyY) internal pure returns (bool) {
+        // NOTE: publicKeyX == 0 is not possible because it is not on the curve
+        return publicKeyX < Secp256k1.N && Secp256k1.isOnCurve(publicKeyX, publicKeyY);
+    }
+
+    function isValidSignatureR(uint256 signatureRX, uint256 signatureRY) internal pure returns (bool) {
+        return Secp256k1.isOnCurve(signatureRX, signatureRY);
+    }
+
+    function isValidMultiplier(uint256 multiplier) internal pure returns (bool) {
+        return multiplier % Secp256k1.N != 0;
+    }
+
     function verifySignature(
         uint256 memPtr,
         uint256 publicKeyX,
