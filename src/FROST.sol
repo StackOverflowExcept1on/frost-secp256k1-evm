@@ -1,6 +1,7 @@
 // SPDX-License-Identifier: MIT
 pragma solidity ^0.8.28;
 
+import {ECDSA} from "./ECDSA.sol";
 import {Hashes} from "./Hashes.sol";
 import {Memory} from "./Memory.sol";
 import {Secp256k1} from "./Secp256k1.sol";
@@ -75,20 +76,6 @@ library FROST {
             s = Secp256k1.N - mulmod(challenge, publicKeyX, Secp256k1.N);
         }
 
-        Memory.writeWord(memPtr, 0x00, e);
-        Memory.writeWord(memPtr, 0x20, v);
-        Memory.writeWord(memPtr, 0x40, r);
-        Memory.writeWord(memPtr, 0x60, s);
-
-        Memory.writeWord(0x00, 0x00, 0x00);
-
-        uint256 recovered;
-        assembly ("memory-safe") {
-            let success := staticcall(gas(), 0x01, memPtr, 0x80, 0x00, 0x20)
-            if iszero(success) { revert(0x00, 0x00) }
-            recovered := mload(0x00)
-        }
-
-        return recovered == Secp256k1.toAddress(signatureRX, signatureRY);
+        return ECDSA.recover(memPtr, e, v, r, s) == Secp256k1.toAddress(signatureRX, signatureRY);
     }
 }
