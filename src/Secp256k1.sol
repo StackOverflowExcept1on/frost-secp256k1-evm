@@ -1,6 +1,8 @@
 // SPDX-License-Identifier: MIT
 pragma solidity ^0.8.28;
 
+import {Hashes} from "./Hashes.sol";
+
 library Secp256k1 {
     uint256 internal constant B = 7;
     uint256 internal constant P = 0xFFFFFFFFFFFFFFFFFFFFFFFFFFFFFFFFFFFFFFFFFFFFFFFFFFFFFFFEFFFFFC2F;
@@ -23,10 +25,9 @@ library Secp256k1 {
     }
 
     function toAddress(uint256 x, uint256 y) internal pure returns (uint256 addr) {
+        uint256 fullHash = Hashes.efficientKeccak256(x, y);
         assembly ("memory-safe") {
-            mstore(0x00, x)
-            mstore(0x20, y)
-            addr := and(keccak256(0x00, 0x40), sub(shl(160, 1), 1))
+            addr := and(fullHash, sub(shl(160, 1), 1))
         }
     }
 }
