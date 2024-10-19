@@ -4,6 +4,7 @@ pragma solidity ^0.8.28;
 import {ECDSA} from "./ECDSA.sol";
 import {Hashes} from "./Hashes.sol";
 import {Memory} from "./Memory.sol";
+import {Schnorr} from "./Schnorr.sol";
 import {Secp256k1} from "./Secp256k1.sol";
 
 library FROST {
@@ -15,14 +16,13 @@ library FROST {
     uint256 internal constant F_2_192 = 0x0000000000000001000000000000000000000000000000000000000000000000;
     uint256 internal constant MASK_64 = 0x000000000000000000000000000000000000000000000000FFFFFFFFFFFFFFFF;
 
-    function verifySignature(
+    function computateChallenge(
         uint256 publicKeyX,
         uint256 publicKeyY,
         uint256 signatureRX,
         uint256 signatureRY,
-        uint256 signatureZ,
         bytes32 message
-    ) internal view returns (bool) {
+    ) internal pure returns (uint256, uint256) {
         uint256 publicKeyYCompressed = Secp256k1.yCompressed(publicKeyY);
         uint256 signatureRYCompressed = Secp256k1.yCompressed(signatureRY);
 
@@ -57,25 +57,19 @@ library FROST {
         uint256 d0 = b_vals >> 64;
         uint256 d1 = ((b_vals & MASK_64) << 128) | (b_vals2 >> 128);
 
-        uint256 challenge = addmod(mulmod(d0, F_2_192, Secp256k1.N), d1, Secp256k1.N);
+        return (memPtr, addmod(mulmod(d0, F_2_192, Secp256k1.N), d1, Secp256k1.N));
+    }
 
-        uint256 e;
-        unchecked {
-            e = Secp256k1.N - mulmod(signatureZ, publicKeyX, Secp256k1.N);
-        }
-
-        uint256 v;
-        unchecked {
-            v = publicKeyYCompressed + 25;
-        }
-
-        uint256 r = publicKeyX;
-
-        uint256 s;
-        unchecked {
-            s = Secp256k1.N - mulmod(challenge, publicKeyX, Secp256k1.N);
-        }
-
-        return ECDSA.recover(memPtr, e, v, r, s) == Secp256k1.toAddress(signatureRX, signatureRY);
+    function verifySignature(
+        uint256 publicKeyX,
+        uint256 publicKeyY,
+        uint256 signatureRX,
+        uint256 signatureRY,
+        uint256 signatureZ,
+        bytes32 message
+    ) internal view returns (bool) {
+        (uint256 memPtr, uint256 challenge) =
+            computateChallenge(publicKeyX, publicKeyY, signatureRX, signatureRY, message);
+        return Schnorr.verifySignature(memPtr, publicKeyX, publicKeyY, signatureRX, signatureRY, signatureZ, challenge);
     }
 }

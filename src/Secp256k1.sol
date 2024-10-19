@@ -16,6 +16,14 @@ library Secp256k1 {
         return y & 1;
     }
 
+    function yParityEthereum(uint256 y) internal pure returns (uint256) {
+        uint256 ethereumYParity;
+        unchecked {
+            ethereumYParity = yParity(y) + 27;
+        }
+        return ethereumYParity;
+    }
+
     function yCompressed(uint256 y) internal pure returns (uint256) {
         uint256 compressedY;
         unchecked {
