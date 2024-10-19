@@ -1,7 +1,7 @@
 // SPDX-License-Identifier: MIT
 pragma solidity ^0.8.28;
 
-import {Memory} from "./Memory.sol";
+import {Memory} from "../Memory.sol";
 
 library ECDSA {
     function recover(uint256 memPtr, uint256 e, uint256 v, uint256 r, uint256 s)

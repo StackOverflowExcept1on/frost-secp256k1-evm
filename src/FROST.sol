@@ -1,11 +1,11 @@
 // SPDX-License-Identifier: MIT
 pragma solidity ^0.8.28;
 
-import {ECDSA} from "./ECDSA.sol";
-import {Hashes} from "./Hashes.sol";
-import {Memory} from "./Memory.sol";
-import {Schnorr} from "./Schnorr.sol";
-import {Secp256k1} from "./Secp256k1.sol";
+import {ECDSA} from "./utils/cryptography/ECDSA.sol";
+import {Hashes} from "./utils/cryptography/Hashes.sol";
+import {Schnorr} from "./utils/cryptography/Schnorr.sol";
+import {Secp256k1} from "./utils/cryptography/Secp256k1.sol";
+import {Memory} from "./utils/Memory.sol";
 
 library FROST {
     uint256 internal constant CHALLENGE_SIZE = 136 + 33 + 33 + 32 + 3 + 32 + 1;
