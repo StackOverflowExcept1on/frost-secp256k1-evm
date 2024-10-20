@@ -35,6 +35,7 @@ library Secp256k1 {
     function toAddress(uint256 x, uint256 y) internal pure returns (uint256 addr) {
         uint256 fullHash = Hashes.efficientKeccak256(x, y);
         assembly ("memory-safe") {
+            // addr = fullHash & ((1 << 160) - 1)
             addr := and(fullHash, sub(shl(160, 1), 1))
         }
     }
