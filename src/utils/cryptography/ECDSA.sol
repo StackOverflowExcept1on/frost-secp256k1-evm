@@ -8,16 +8,18 @@ import {Memory} from "../Memory.sol";
  */
 library ECDSA {
     /**
-     * @dev `ecrecover(e, v, r, s)` works according to formula $Q = r^{-1} \( sR - eG \)$
+     * @dev Recovers Ethereum address from ECDSA signature.
+     *      `ecrecover(e, v, r, s)` works according to formula $Q = r^{-1} \( sR - eG \)$
      *      from https://secg.org/sec1-v2.pdf#subsubsection.4.1.6.
      * @param memPtr Memory pointer for writing 128 bytes of input data.
-     * @param e Message hash, can be any 256-bit number, will be reduced to valid scalar.
+     * @param e Message hash, can be any 256-bit number,
+     *          will be reduced to valid scalar (can be zero scalar).
      * @param v Recovery ID, can be 27 or 28.
      *          Point `R(x, y)` has `yParity = v - 27`, `y` is calculated from `yParity`.
-     * @param r Scalar r, must be in `[1, Secp256k1.N)` and `x = r` must be on curve.
+     * @param r Non-zero scalar r, must be in `[1, Secp256k1.N)` and `x = r` must be on curve.
      *          Point `R(x, y)` has coordinate `x = r`.
-     * @param s Scalar s, must be in `[1, Secp256k1.N)`.
-     * @return recovered 160-bit ethereum address of `Q` point.
+     * @param s Non-zero scalar s, must be in `[1, Secp256k1.N)`.
+     * @return recovered 160-bit Ethereum address of `Q` point.
      * @dev If `v, r, s` do not satisfy above conditions, then `recovered = 0`
      */
     function recover(uint256 memPtr, uint256 e, uint256 v, uint256 r, uint256 s)
