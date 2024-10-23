@@ -15,7 +15,32 @@ library Schnorr {
      * @return isValidPublicKey `true` if public key is valid, `false` otherwise.
      */
     function isValidPublicKey(uint256 publicKeyX, uint256 publicKeyY) internal pure returns (bool) {
-        return isValidMultiplier(publicKeyX) && Secp256k1.isOnCurve(publicKeyX, publicKeyY);
+        // `publicKeyX` is always in `[1, Secp256k1.N)` and valid non-zero scalar because:
+        // 1. since `publicKeyX < Secp256k1.N`, then `publicKeyX % Secp256k1.N != 0`
+        // 2. but what about `publicKeyX = 0`?
+        //    since we also check `Secp256k1.isOnCurve(publicKeyX, publicKeyY)`,
+        //    checking `publicKeyX != 0` is not needed because `publicKeyX = 0` is not on curve.
+        //
+        //    this statement can also be verified using script: based on
+        //    ```python
+        //    A = 0
+        //    B = 7
+        //    P = 0xFFFFFFFFFFFFFFFFFFFFFFFFFFFFFFFFFFFFFFFFFFFFFFFFFFFFFFFEFFFFFC2F
+        //    N = 0xFFFFFFFFFFFFFFFFFFFFFFFFFFFFFFFEBAAEDCE6AF48A03BBFD25E8CD0364141
+        //
+        //    x = 0
+        //
+        //    xcubedaxb = (x * x * x + A * x + B) % P
+        //    beta = pow(xcubedaxb, (P + 1) // 4, P)
+        //    y = beta # it can be `beta` or `beta - P`
+        //    if (xcubedaxb - y * y) % P != 0:
+        //        print("not on curve")
+        //    ```
+        //
+        //    this script is based on code from eth-keys:
+        //    https://github.com/ethereum/eth-keys/blob/d8d1ecc6e159dd1dd7b12d7a203f8a276fa2a8ba/eth_keys/backends/native/ecdsa.py#L165
+
+        return publicKeyX < Secp256k1.N && Secp256k1.isOnCurve(publicKeyX, publicKeyY);
     }
 
     /**
@@ -103,7 +128,13 @@ library Schnorr {
         //    but `a % Secp256k1.N != 0` and `b % Secp256k1.N != 0` because it's checked with:
         //    - `Schnorr.isValidMultiplier(signatureZ)`.
         //    - `Schnorr.isValidPublicKey(publicKeyX, publicKeyY)`.
-        //    it also checks `Schnorr.isValidMultiplier(publicKeyX)`.
+        //       it also checks `Schnorr.isValidMultiplier(publicKeyX)`
+        //       (see `isValidPublicKey` implementation).
+        //
+        //    thus `mulmod(a, b, Secp256k1.N) != 0`.
+        //
+        //    minimum value of `mulmod(a, b, Secp256k1.N)` is `1`, not `0`.
+        //    maximum value of `e` is `Secp256k1.N - 1`.
         //
         // 2. maximum value of `mulmod(a, b, Secp256k1.N)` is `Secp256k1.N - 1`. it's good because:
         //    minimum value of `e` is `e = Secp256k1.N - (Secp256k1.N - 1) = 1`.
@@ -111,7 +142,7 @@ library Schnorr {
         // thus `e` is always in `[1, Secp256k1.N)` and is valid non-zero scalar if:
         // - `a % Secp256k1.N != 0` and `b % Secp256k1.N != 0`.
         //
-        // since `e < Secp256k1.N` we can do the operation `negmod(A) = (N - A) mod N)` without `mod N`.
+        // since `e < Secp256k1.N` we can do `negmod(A) = (N - A) mod N)` without `mod N`.
         // `e = Secp256k1.N - mulmod_result` should be read as `-mulmod_result % Secp256k1.N`.
         // also see: https://us.metamath.org/mpeuni/negmod.html.
         uint256 e;
@@ -133,7 +164,8 @@ library Schnorr {
             s = Secp256k1.N - mulmod(challenge, publicKeyX, Secp256k1.N);
         }
 
-        // TODO: write about formula, negmod, etc.
+        // based on Vitalik Buterin's post of abusing `ecrecover` to do `ecmul`:
+        // https://ethresear.ch/t/you-can-kinda-abuse-ecrecover-to-do-ecmul-in-secp256k1-today/2384
 
         // https://github.com/ZcashFoundation/frost/blob/2d88edf1623ee29f671a43966aae0bd4ead2ea7a/frost-core/src/signature.rs#L9
         // https://github.com/ZcashFoundation/frost/blob/2d88edf1623ee29f671a43966aae0bd4ead2ea7a/frost-core/src/verifying_key.rs#L54
