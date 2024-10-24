@@ -164,11 +164,35 @@ library Schnorr {
             s = Secp256k1.N - mulmod(challenge, publicKeyX, Secp256k1.N);
         }
 
-        // based on Vitalik Buterin's post of abusing `ecrecover` to do `ecmul`:
+        // based on Vitalik Buterin's post about abusing `ecrecover` to do `ecmul`:
         // https://ethresear.ch/t/you-can-kinda-abuse-ecrecover-to-do-ecmul-in-secp256k1-today/2384
 
+        // Schnorr's signature structure:
         // https://github.com/ZcashFoundation/frost/blob/2d88edf1623ee29f671a43966aae0bd4ead2ea7a/frost-core/src/signature.rs#L9
+        // Schnorr's challenge structure:
+        // https://github.com/ZcashFoundation/frost/blob/2d88edf1623ee29f671a43966aae0bd4ead2ea7a/frost-core/src/lib.rs#L69
+
+        // Schnorr's signature verification formula: $zG - cX = R$:
         // https://github.com/ZcashFoundation/frost/blob/2d88edf1623ee29f671a43966aae0bd4ead2ea7a/frost-core/src/verifying_key.rs#L54
+        // $zG - cX$ is calculated using `ECDSA.recover(memPtr, e, v, r, s)`.
+        // $R$ is calculated using `Secp256k1.toAddress(signatureRX, signatureRY)`.
+
+        // how $zG - cX$ is calculated using `ECDSA.recover(memPtr, e, v, r, s)`?
+        // `ecrecover(e, v, r, s)` works according to formula $Q = r^{-1} \( sR - eG \)$.
+        // we need to substitute following parameters:
+        // - `e = -(signature.z * publicKeyX)` (modular arithmetic is used everywhere).
+        // - `v = (publicKeyY & 1) + 27`.
+        // - `r = publicKeyX`.
+        // - `s = -(challenge * publicKeyX)` (modular arithmetic is used everywhere).
+        // we rewrite it like this:
+        // - `e = -(signature.z * r)`.
+        // - `v = (publicKeyY & 1) + 27`.
+        // - `r = publicKeyX`.
+        // - `s = -(challenge * r)`.
+        // if we substitute this into $Q$, notice that $r^{-1} \cdot r = 1$.
+        // so we calculate `-challenge * R - (-signature.z) * G`, not $Q$.
+        // it can be simplified to `signature.z * G - challenge * R` or $zG - cX$.
+        // point $R$ is public key, see `ECDSA.recover(memPtr, e, v, r, s)` documentation for details.
 
         // `ECDSA.recover(memPtr, e, v, r, s)` returns 160-bit Ethereum address instead of public key,
         // so we also need to convert Signature R to Ethereum address using `Secp256k1.toAddress(signatureRX, signatureRY)`.

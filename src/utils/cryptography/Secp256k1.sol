@@ -8,8 +8,8 @@ import {Hashes} from "./Hashes.sol";
  *      described by equation `y^2 = x^3 + ax + b (mod p)`
  *      where `a = 0` and `b = 7`.
  * @dev Curve parameters taken from:
- *      - https://en.bitcoin.it/wiki/Secp256k1.
- *      - https://github.com/ethereum/go-ethereum/blob/5c3b792e6161a7d8a8d0b7c59d7b7bcffc8bf3d5/crypto/secp256k1/curve.go#L282.
+ *      - https://en.bitcoin.it/wiki/Secp256k1
+ *      - https://github.com/ethereum/go-ethereum/blob/5c3b792e6161a7d8a8d0b7c59d7b7bcffc8bf3d5/crypto/secp256k1/curve.go#L282
  */
 library Secp256k1 {
     /**
