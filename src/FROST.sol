@@ -7,74 +7,153 @@ import {Schnorr} from "./utils/cryptography/Schnorr.sol";
 import {Secp256k1} from "./utils/cryptography/Secp256k1.sol";
 import {Memory} from "./utils/Memory.sol";
 
+/**
+ * @dev Library for verifying `FROST-secp256k1-KECCAK256` signatures.
+ */
 library FROST {
-    uint256 internal constant CHALLENGE_SIZE = 136 + 33 + 33 + 32 + 3 + 32 + 1;
+    uint256 internal constant KECCAK256_BLOCK_SIZE = 136;
 
-    // "\x00\x30\x00FROST-secp256k1-KECCAK256-v1c"
-    uint256 internal constant CHALLENGE_STRING1 = 0x00300046524f53542d736563703235366b312d4b454343414b3235362d763163;
-    // "hal\x20"
-    uint256 internal constant CHALLENGE_STRING2 = 0x68616c2000000000000000000000000000000000000000000000000000000000;
+    uint256 internal constant PUBLIC_KEY_Y_PARITY_SIZE = 1;
+    uint256 internal constant PUBLIC_KEY_X_SIZE = 32;
+    uint256 internal constant PUBLIC_KEY_SIZE = 33;
+
+    uint256 internal constant MESSAGE_HASH_SIZE = 32;
+
+    uint256 internal constant LEN_IN_BYTES_U16_SIZE = 2;
+    uint256 internal constant ZERO_BYTE_SIZE = 1;
+
+    uint256 internal constant DOMAIN_SIZE = 32;
+    uint256 internal constant DOMAIN_PART1_SIZE = 29;
+    uint256 internal constant DOMAIN_PART2_SIZE = 3;
+
+    uint256 internal constant DOMAIN_LENGTH_SIZE = 1;
+
+    uint256 internal constant CHALLENGE_SIZE = KECCAK256_BLOCK_SIZE + PUBLIC_KEY_SIZE + PUBLIC_KEY_SIZE
+        + MESSAGE_HASH_SIZE + LEN_IN_BYTES_U16_SIZE + ZERO_BYTE_SIZE + DOMAIN_SIZE + DOMAIN_LENGTH_SIZE;
+
+    uint256 internal constant INPUT_HASH_SIZE = 32;
+    uint256 internal constant RESERVED_BYTE_SIZE = 1;
+
+    uint256 internal constant OUTPUT_HASH_SIZE = INPUT_HASH_SIZE + RESERVED_BYTE_SIZE + DOMAIN_SIZE + DOMAIN_LENGTH_SIZE;
+
+    // "\x00\x30" - len_in_bytes_u16
+    // "\x00" - zero byte
+    // "FROST-secp256k1-KECCAK256-v1c" - domain
+    uint256 internal constant DOMAIN_SEPARATOR1 = 0x00300046524f53542d736563703235366b312d4b454343414b3235362d763163;
+    // "hal" - domain
+    // "\x20" - domain length
+    uint256 internal constant DOMAIN_SEPARATOR2 = 0x68616c2000000000000000000000000000000000000000000000000000000000;
 
     uint256 internal constant F_2_192 = 0x0000000000000001000000000000000000000000000000000000000000000000;
     uint256 internal constant MASK_64 = 0x000000000000000000000000000000000000000000000000FFFFFFFFFFFFFFFF;
 
+    /**
+     * @dev Checks if public key `(x, y)` is on curve and that `x < Secp256k1.N`.
+     *      It also checks that `x % Secp256k1.N != 0`.
+     * @param publicKeyX Public key x.
+     * @param publicKeyY Public key y.
+     * @return isValidPublicKey `true` if public key is valid, `false` otherwise.
+     */
     function isValidPublicKey(uint256 publicKeyX, uint256 publicKeyY) internal pure returns (bool) {
         return Schnorr.isValidPublicKey(publicKeyX, publicKeyY);
     }
 
+    /**
+     * @dev Computes challenge for `FROST-secp256k1-KECCAK256` signature.
+     * @param publicKeyX Public key x.
+     * @param publicKeyY Public key y.
+     * @param signatureRX Signature R x.
+     * @param signatureRY Signature R y.
+     * @param messageHash Message hash.
+     * @return memPtr Pointer to allocated memory, memory size is `FROST.CHALLENGE_SIZE`.
+     * @return challenge Challenge.
+     */
     function computateChallenge(
         uint256 publicKeyX,
         uint256 publicKeyY,
         uint256 signatureRX,
         uint256 signatureRY,
-        bytes32 message
+        bytes32 messageHash
     ) internal pure returns (uint256, uint256) {
+        // https://github.com/ZcashFoundation/frost/blob/2d88edf1623ee29f671a43966aae0bd4ead2ea7a/frost-core/src/lib.rs#L121
+        // https://github.com/ZcashFoundation/frost/blob/2d88edf1623ee29f671a43966aae0bd4ead2ea7a/frost-secp256k1/src/lib.rs#L197
+        // https://github.com/ZcashFoundation/frost/blob/2d88edf1623ee29f671a43966aae0bd4ead2ea7a/frost-secp256k1/src/lib.rs#L162
+
         uint256 publicKeyYCompressed = Secp256k1.yCompressed(publicKeyY);
         uint256 signatureRYCompressed = Secp256k1.yCompressed(signatureRY);
 
+        // https://github.com/RustCrypto/traits/blob/a1ade1baa00de8c9f9e76ef673734db8f36d6982/elliptic-curve/src/hash2curve/hash2field.rs#L35
+        // https://github.com/RustCrypto/traits/blob/a1ade1baa00de8c9f9e76ef673734db8f36d6982/elliptic-curve/src/hash2curve/hash2field/expand_msg/xmd.rs#L44
+
         uint256 memPtr = Memory.allocate(CHALLENGE_SIZE);
 
-        Memory.zeroize(memPtr, 136);
+        Memory.zeroize(memPtr, KECCAK256_BLOCK_SIZE);
 
-        Memory.writeByte(memPtr, 136, signatureRYCompressed);
-        Memory.writeWord(memPtr, 137, signatureRX);
+        Memory.writeByte(memPtr, KECCAK256_BLOCK_SIZE, signatureRYCompressed);
+        Memory.writeWord(memPtr, KECCAK256_BLOCK_SIZE + PUBLIC_KEY_Y_PARITY_SIZE, signatureRX);
 
-        Memory.writeByte(memPtr, 169, publicKeyYCompressed);
-        Memory.writeWord(memPtr, 170, publicKeyX);
+        Memory.writeByte(memPtr, KECCAK256_BLOCK_SIZE + PUBLIC_KEY_SIZE, publicKeyYCompressed);
+        Memory.writeWord(memPtr, KECCAK256_BLOCK_SIZE + PUBLIC_KEY_SIZE + PUBLIC_KEY_Y_PARITY_SIZE, publicKeyX);
 
-        Memory.writeWord(memPtr, 202, uint256(message));
+        Memory.writeWord(memPtr, KECCAK256_BLOCK_SIZE + PUBLIC_KEY_SIZE + PUBLIC_KEY_SIZE, uint256(messageHash));
 
-        Memory.writeWord(memPtr, 234, CHALLENGE_STRING1);
-        Memory.writeWord(memPtr, 266, CHALLENGE_STRING2);
+        uint256 offset = KECCAK256_BLOCK_SIZE + PUBLIC_KEY_SIZE + PUBLIC_KEY_SIZE + MESSAGE_HASH_SIZE;
+        Memory.writeWord(memPtr, offset, DOMAIN_SEPARATOR1);
+        Memory.writeWord(memPtr, offset + LEN_IN_BYTES_U16_SIZE + ZERO_BYTE_SIZE + DOMAIN_PART1_SIZE, DOMAIN_SEPARATOR2);
 
-        uint256 b0 = Hashes.rawKeccak256(memPtr, 0, CHALLENGE_SIZE);
+        uint256 b0 = Hashes.efficientKeccak256(memPtr, 0, CHALLENGE_SIZE);
 
-        Memory.writeWord(memPtr, 204, b0);
-        Memory.writeByte(memPtr, 236, 1);
+        // https://github.com/RustCrypto/traits/blob/a1ade1baa00de8c9f9e76ef673734db8f36d6982/elliptic-curve/src/hash2curve/hash2field/expand_msg/xmd.rs#L142
+        // https://github.com/RustCrypto/traits/blob/a1ade1baa00de8c9f9e76ef673734db8f36d6982/elliptic-curve/src/hash2curve/hash2field/expand_msg/xmd.rs#L112
 
-        uint256 b_vals = Hashes.rawKeccak256(memPtr, 204, 66);
-        uint256 tmp = b0 ^ b_vals;
+        uint256 offset1 = KECCAK256_BLOCK_SIZE + PUBLIC_KEY_SIZE + PUBLIC_KEY_SIZE + 2;
+        uint256 offset2 =
+            KECCAK256_BLOCK_SIZE + PUBLIC_KEY_SIZE + PUBLIC_KEY_SIZE + MESSAGE_HASH_SIZE + LEN_IN_BYTES_U16_SIZE;
 
-        Memory.writeWord(memPtr, 204, tmp);
-        Memory.writeByte(memPtr, 236, 2);
+        Memory.writeWord(memPtr, offset1, b0);
+        Memory.writeByte(memPtr, offset2, 1);
 
-        uint256 b_vals2 = Hashes.rawKeccak256(memPtr, 204, 66);
+        uint256 bVals = Hashes.efficientKeccak256(memPtr, offset1, OUTPUT_HASH_SIZE);
+        uint256 tmp = b0 ^ bVals;
 
-        uint256 d0 = b_vals >> 64;
-        uint256 d1 = ((b_vals & MASK_64) << 128) | (b_vals2 >> 128);
+        Memory.writeWord(memPtr, offset1, tmp);
+        Memory.writeByte(memPtr, offset2, 2);
+
+        uint256 bVals2 = Hashes.efficientKeccak256(memPtr, offset1, OUTPUT_HASH_SIZE);
+
+        // https://github.com/RustCrypto/elliptic-curves/blob/1bfea04d5605b303db0ee2463685ef0bdc7c9087/k256/src/arithmetic/hash2curve.rs#L150
+
+        uint256 d0 = bVals >> 64;
+        uint256 d1 = ((bVals & MASK_64) << 128) | (bVals2 >> 128);
 
         return (memPtr, addmod(mulmod(d0, F_2_192, Secp256k1.N), d1, Secp256k1.N));
     }
 
+    /**
+     * @dev Verifies `FROST-secp256k1-KECCAK256` signature by formula $zG - cX = R$.
+     *      - Public key ($X$) must be checked with `FROST.isValidPublicKey(publicKeyX, publicKeyY)`.
+     *      - Signature R ($R$) must be on curve.
+     *      - Signature Z ($z$).
+     *      - Challenge ($c$) is computed via `FROST.computateChallenge(...)`.
+     * @param publicKeyX Public key x.
+     * @param publicKeyY Public key y.
+     * @param signatureRX Signature R x.
+     * @param signatureRY Signature R y.
+     * @param signatureZ Signature Z.
+     * @param messageHash Message hash.
+     * @return `true` if signature is valid, `false` otherwise.
+     */
     function verifySignature(
         uint256 publicKeyX,
         uint256 publicKeyY,
         uint256 signatureRX,
         uint256 signatureRY,
         uint256 signatureZ,
-        bytes32 message
+        bytes32 messageHash
     ) internal view returns (bool) {
-        // NOTE: publicKeyX and publicKeyY must be checked before calling this function
+        // https://github.com/ZcashFoundation/frost/blob/2d88edf1623ee29f671a43966aae0bd4ead2ea7a/frost-core/src/verifying_key.rs#L75
+        // https://github.com/ZcashFoundation/frost/blob/2d88edf1623ee29f671a43966aae0bd4ead2ea7a/frost-core/src/traits.rs#L225
+        // https://github.com/ZcashFoundation/frost/blob/2d88edf1623ee29f671a43966aae0bd4ead2ea7a/frost-core/src/verifying_key.rs#L54
 
         if (!Schnorr.isValidSignatureR(signatureRX, signatureRY)) {
             return false;
@@ -85,7 +164,7 @@ library FROST {
         }
 
         (uint256 memPtr, uint256 challenge) =
-            computateChallenge(publicKeyX, publicKeyY, signatureRX, signatureRY, message);
+            computateChallenge(publicKeyX, publicKeyY, signatureRX, signatureRY, messageHash);
 
         if (!Schnorr.isValidMultiplier(challenge)) {
             return false;

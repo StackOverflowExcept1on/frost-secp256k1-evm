@@ -5,11 +5,12 @@ import {ECDSA} from "./ECDSA.sol";
 import {Secp256k1} from "./Secp256k1.sol";
 
 /**
- * @dev Library for verifying Schnorr's signature.
+ * @dev Library for verifying Schnorr's signatures.
  */
 library Schnorr {
     /**
-     * @dev Checks if public key `(x, y)` is on curve and that `x % Secp256k1.N != 0`.
+     * @dev Checks if public key `(x, y)` is on curve and that `x < Secp256k1.N`.
+     *      It also checks that `x % Secp256k1.N != 0`.
      * @param publicKeyX Public key x.
      * @param publicKeyY Public key y.
      * @return isValidPublicKey `true` if public key is valid, `false` otherwise.

@@ -12,7 +12,7 @@ library Hashes {
      * @param size Size of memory chunk to hash.
      * @return value Hash of memory chunk.
      */
-    function rawKeccak256(uint256 memPtr, uint256 offset, uint256 size) internal pure returns (uint256 value) {
+    function efficientKeccak256(uint256 memPtr, uint256 offset, uint256 size) internal pure returns (uint256 value) {
         assembly ("memory-safe") {
             // https://evm.codes/#20
             value := keccak256(add(memPtr, offset), size)
