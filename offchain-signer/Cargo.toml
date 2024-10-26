@@ -4,6 +4,6 @@ version = "0.1.0"
 edition = "2021"
 
 [dependencies]
-frost-secp256k1-evm = { git = "https://github.com/StackOverflowExcept1on/frost", branch = "frost-secp256k1-evm-demo" }
+frost-secp256k1-evm = "2.0.0"
 rand = "0.8"
 k256 = "0.13"
