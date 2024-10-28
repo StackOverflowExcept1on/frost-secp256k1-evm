@@ -15,10 +15,10 @@ contract Counter {
         publicKeyY = _publicKeyY;
     }
 
-    function verifySignature(uint256 signatureRX, uint256 signatureRY, uint256 signatureZ, bytes32 message)
+    function verifySignature(uint256 signatureRX, uint256 signatureRY, uint256 signatureZ, bytes32 messageHash)
         external
         payable
     {
-        require(FROST.verifySignature(publicKeyX, publicKeyY, signatureRX, signatureRY, signatureZ, message));
+        require(FROST.verifySignature(publicKeyX, publicKeyY, signatureRX, signatureRY, signatureZ, messageHash));
     }
 }
