@@ -133,8 +133,9 @@ library FROST {
      * @dev Verifies `FROST-secp256k1-KECCAK256` signature by formula $zG - cX = R$.
      *      - Public key ($X$) must be checked with `FROST.isValidPublicKey(publicKeyX, publicKeyY)`.
      *      - Signature R ($R$) must be on curve.
-     *      - Signature Z ($z$).
-     *      - Challenge ($c$) is computed via `FROST.computateChallenge(...)`.
+     *      - Signature Z ($z$) must be in `[1, Secp256k1.N)`.
+     *      - Challenge ($c$) is computed via `FROST.computateChallenge(...)`,
+     *        must be in `[1, Secp256k1.N)`.
      * @param publicKeyX Public key x.
      * @param publicKeyY Public key y.
      * @param signatureRX Signature R x.
@@ -155,18 +156,31 @@ library FROST {
         // https://github.com/ZcashFoundation/frost/blob/2d88edf1623ee29f671a43966aae0bd4ead2ea7a/frost-core/src/traits.rs#L225
         // https://github.com/ZcashFoundation/frost/blob/2d88edf1623ee29f671a43966aae0bd4ead2ea7a/frost-core/src/verifying_key.rs#L54
 
-        if (!Schnorr.isValidSignatureR(signatureRX, signatureRY)) {
+        if (!Secp256k1.isOnCurve(signatureRX, signatureRY)) {
             return false;
         }
 
-        if (!Schnorr.isValidMultiplier(signatureZ)) {
+        // `signatureZ` is always in `[1, Secp256k1.N)` and valid non-zero scalar because:
+        // 1. `signatureZ = 0`  is checked.
+        // 2. `signatureZ >= Secp256k1.N` is checked.
+        // thus `signatureZ % Secp256k1.N != 0`.
+        if (signatureZ == 0) {
+            return false;
+        }
+
+        if (signatureZ >= Secp256k1.N) {
             return false;
         }
 
         (uint256 memPtr, uint256 challenge) =
             computateChallenge(publicKeyX, publicKeyY, signatureRX, signatureRY, messageHash);
 
-        if (!Schnorr.isValidMultiplier(challenge)) {
+        // `challenge` is always in `[1, Secp256k1.N)` and valid non-zero scalar because:
+        // 1. `FROST.computateChallenge(...)` returns `challenge < Secp256k1.N`
+        //    (it uses modular arithmetic).
+        // 2. `challenge = 0` is checked.
+        // thus `challenge % Secp256k1.N != 0`.
+        if (challenge == 0) {
             return false;
         }
 

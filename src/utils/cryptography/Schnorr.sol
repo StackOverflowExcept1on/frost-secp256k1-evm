@@ -45,30 +45,11 @@ library Schnorr {
     }
 
     /**
-     * @dev Checks if `signature.R` public key `(x, y)` is on curve.
-     * @param signatureRX Public key x.
-     * @param signatureRY Public key y.
-     * @return isValidSignatureR `true` if `signature.R` public key is on curve, `false` otherwise.
-     */
-    function isValidSignatureR(uint256 signatureRX, uint256 signatureRY) internal pure returns (bool) {
-        return Secp256k1.isOnCurve(signatureRX, signatureRY);
-    }
-
-    /**
-     * @dev Checks if `multiplier % Secp256k1.N != 0`.
-     * @param multiplier Multiplier.
-     * @return isValidMultiplier `true` if `multiplier % Secp256k1.N != 0`, `false` otherwise.
-     */
-    function isValidMultiplier(uint256 multiplier) internal pure returns (bool) {
-        return multiplier % Secp256k1.N != 0;
-    }
-
-    /**
      * @dev Verifies Schnorr signature by formula $zG - cX = R$.
      *      - Public key ($X$) must be checked with `Schnorr.isValidPublicKey(publicKeyX, publicKeyY)`.
-     *      - Signature R ($R$) must be checked with `Schnorr.isValidSignatureR(signatureRX, signatureRY)`.
-     *      - Signature Z ($z$) must be checked with `Schnorr.isValidMultiplier(signatureZ)`.
-     *      - Challenge ($c$) must be checked with `Schnorr.isValidMultiplier(challenge)`.
+     *      - Signature R ($R$) must be checked with `Secp256k1.isOnCurve(signatureRX, signatureRY)`.
+     *      - Signature Z ($z$) must be checked with `signatureZ % Secp256k1.N != 0`.
+     *      - Challenge ($c$) must be checked with `challenge % Secp256k1.N != 0`.
      * @param memPtr Memory pointer for writing 128 bytes of input data.
      * @param publicKeyX Public key x.
      * @param publicKeyY Public key y.
@@ -127,9 +108,9 @@ library Schnorr {
         //    ```
         //
         //    but `a % Secp256k1.N != 0` and `b % Secp256k1.N != 0` because it's checked with:
-        //    - `Schnorr.isValidMultiplier(signatureZ)`.
+        //    - `signatureZ % Secp256k1.N != 0`.
         //    - `Schnorr.isValidPublicKey(publicKeyX, publicKeyY)`.
-        //       it also checks `Schnorr.isValidMultiplier(publicKeyX)`
+        //       it also checks `publicKeyX % Secp256k1.N != 0`
         //       (see `isValidPublicKey` implementation).
         //
         //    thus `mulmod(a, b, Secp256k1.N) != 0`.
@@ -199,7 +180,7 @@ library Schnorr {
         // so we also need to convert Signature R to Ethereum address using `Secp256k1.toAddress(signatureRX, signatureRY)`.
 
         // we also previously checked that Signature R is on curve using
-        // `Schnorr.isValidSignatureR(signatureRX, signatureRY)`.
+        // `Secp256k1.isOnCurve(signatureRX, signatureRY)`.
 
         return ECDSA.recover(memPtr, e, v, r, s) == Secp256k1.toAddress(signatureRX, signatureRY);
     }

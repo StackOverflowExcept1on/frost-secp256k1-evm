@@ -81,10 +81,11 @@ library TranspiledFROST {
                     var := 0
                     leave
                 }
-                let var_1 := 0
-                let _1 := iszero(mod(var_signatureZ, not(0x014551231950b75fc4402da1732fc9bebe)))
-                var_1 := iszero(_1)
-                if _1 {
+                if iszero(var_signatureZ) {
+                    var := 0
+                    leave
+                }
+                if iszero(lt(var_signatureZ, not(0x014551231950b75fc4402da1732fc9bebe))) {
                     var := 0
                     leave
                 }
@@ -104,25 +105,22 @@ library TranspiledFROST {
                 mstore(add(var_memPtr, 234), 0x300046524f53542d736563703235366b312d4b454343414b3235362d763163)
                 mstore(add(var_memPtr, 266), shl(229, 0x03430b61))
                 let var_value := keccak256(var_memPtr, ret)
-                let _2 := add(var_memPtr, 204)
-                mstore(_2, var_value)
-                let _3 := add(var_memPtr, 236)
-                mstore8(_3, 0x01)
+                let _1 := add(var_memPtr, 204)
+                mstore(_1, var_value)
+                let _2 := add(var_memPtr, 236)
+                mstore8(_2, 0x01)
                 let ret_1 := 0
                 ret_1 := 66
-                let var_value_1 := keccak256(_2, 66)
-                mstore(_2, xor(var_value, var_value_1))
-                mstore8(_3, 0x02)
+                let var_value_1 := keccak256(_1, 66)
+                mstore(_1, xor(var_value, var_value_1))
+                mstore8(_2, 0x02)
                 let expr_1 :=
                     addmod(
                         mulmod(shr(0x40, var_value_1), shl(192, 1), not(0x014551231950b75fc4402da1732fc9bebe)),
-                        or(and(shl(0x80, var_value_1), shl(128, 0xffffffffffffffff)), shr(0x80, keccak256(_2, 66))),
+                        or(and(shl(0x80, var_value_1), shl(128, 0xffffffffffffffff)), shr(0x80, keccak256(_1, 66))),
                         not(0x014551231950b75fc4402da1732fc9bebe)
                     )
-                let var_2 := 0
-                let _4 := iszero(mod(expr_1, not(0x014551231950b75fc4402da1732fc9bebe)))
-                var_2 := iszero(_4)
-                if _4 {
+                if iszero(expr_1) {
                     var := 0
                     leave
                 }
