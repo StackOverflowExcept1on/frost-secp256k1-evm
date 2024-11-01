@@ -42,7 +42,7 @@ library TranspiledFROST {
      *      - Public key ($X$) must be checked with `FROST.isValidPublicKey(publicKeyX, publicKeyY)`.
      *      - Signature R ($R$) must be on curve.
      *      - Signature Z ($z$).
-     *      - Challenge ($c$) is computed via `FROST.computateChallenge(...)`.
+     *      - Challenge ($c$) is computed via `FROST.computeChallenge(...)`.
      * @param publicKeyX Public key x.
      * @param publicKeyY Public key y.
      * @param signatureRX Signature R x.

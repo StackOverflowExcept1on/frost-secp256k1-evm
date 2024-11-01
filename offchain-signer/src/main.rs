@@ -17,7 +17,7 @@ fn convert_public_key(serialized: &[u8]) -> Vec<u8> {
 fn slice2hex(slice: &[u8]) -> String {
     slice
         .iter()
-        .map(|byte| format!("{byte:02x}"))
+        .map(|byte| format!("{byte:02X}"))
         .collect::<Vec<_>>()
         .join("")
 }

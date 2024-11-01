@@ -19,7 +19,7 @@ library Memory {
             // https://github.com/ethereum/solidity/blob/cb576b1ae351e28e7f7a3a1129557035d5439ffc/libsolidity/codegen/YulUtilFunctions.cpp#L3226
             // https://github.com/ethereum/solidity/blob/cb576b1ae351e28e7f7a3a1129557035d5439ffc/libsolidity/codegen/YulUtilFunctions.cpp#L693
             let newFreePtr := add(memPtr, and(add(size, 31), not(31)))
-            if or(gt(newFreePtr, 0xffffffffffffffff), lt(newFreePtr, memPtr)) { revert(0, 0) }
+            if or(gt(newFreePtr, 0xFFFFFFFFFFFFFFFF), lt(newFreePtr, memPtr)) { revert(0x00, 0x00) }
             mstore(0x40, newFreePtr)
         }
     }
@@ -33,6 +33,19 @@ library Memory {
         // https://github.com/ethereum/solidity/blob/cb576b1ae351e28e7f7a3a1129557035d5439ffc/libsolidity/codegen/YulUtilFunctions.cpp#L3253
         assembly ("memory-safe") {
             calldatacopy(dataStart, calldatasize(), dataSizeInBytes)
+        }
+    }
+
+    /**
+     * @dev Reads word from memory at given offset.
+     * @param memPtr Pointer to memory.
+     * @param offset Offset in memory.
+     * @return word Word from memory.
+     */
+    function readWord(uint256 memPtr, uint256 offset) internal pure returns (uint256 word) {
+        // https://evm.codes/#51
+        assembly ("memory-safe") {
+            word := mload(add(memPtr, offset))
         }
     }
 

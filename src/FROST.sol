@@ -39,10 +39,10 @@ library FROST {
     // "\x00\x30" - len_in_bytes_u16
     // "\x00" - zero byte
     // "FROST-secp256k1-KECCAK256-v1c" - domain
-    uint256 internal constant DOMAIN_SEPARATOR1 = 0x00300046524f53542d736563703235366b312d4b454343414b3235362d763163;
+    uint256 internal constant DOMAIN_SEPARATOR1 = 0x00300046524F53542D736563703235366B312D4B454343414B3235362D763163;
     // "hal" - domain
     // "\x20" - domain length
-    uint256 internal constant DOMAIN_SEPARATOR2 = 0x68616c2000000000000000000000000000000000000000000000000000000000;
+    uint256 internal constant DOMAIN_SEPARATOR2 = 0x68616C2000000000000000000000000000000000000000000000000000000000;
 
     uint256 internal constant F_2_192 = 0x0000000000000001000000000000000000000000000000000000000000000000;
     uint256 internal constant MASK_64 = 0x000000000000000000000000000000000000000000000000FFFFFFFFFFFFFFFF;
@@ -68,7 +68,7 @@ library FROST {
      * @return memPtr Pointer to allocated memory, memory size is `FROST.CHALLENGE_SIZE`.
      * @return challenge Challenge.
      */
-    function computateChallenge(
+    function computeChallenge(
         uint256 publicKeyX,
         uint256 publicKeyY,
         uint256 signatureRX,
@@ -134,7 +134,7 @@ library FROST {
      *      - Public key ($X$) must be checked with `FROST.isValidPublicKey(publicKeyX, publicKeyY)`.
      *      - Signature R ($R$) must be on curve.
      *      - Signature Z ($z$) must be in `[1, Secp256k1.N)`.
-     *      - Challenge ($c$) is computed via `FROST.computateChallenge(...)`,
+     *      - Challenge ($c$) is computed via `FROST.computeChallenge(...)`,
      *        must be in `[1, Secp256k1.N)`.
      * @param publicKeyX Public key x.
      * @param publicKeyY Public key y.
@@ -161,7 +161,7 @@ library FROST {
         }
 
         // `signatureZ` is always in `[1, Secp256k1.N)` and valid non-zero scalar because:
-        // 1. `signatureZ = 0`  is checked.
+        // 1. `signatureZ = 0` is checked.
         // 2. `signatureZ >= Secp256k1.N` is checked.
         // thus `signatureZ % Secp256k1.N != 0`.
         if (signatureZ == 0) {
@@ -173,10 +173,10 @@ library FROST {
         }
 
         (uint256 memPtr, uint256 challenge) =
-            computateChallenge(publicKeyX, publicKeyY, signatureRX, signatureRY, messageHash);
+            computeChallenge(publicKeyX, publicKeyY, signatureRX, signatureRY, messageHash);
 
         // `challenge` is always in `[1, Secp256k1.N)` and valid non-zero scalar because:
-        // 1. `FROST.computateChallenge(...)` returns `challenge < Secp256k1.N`
+        // 1. `FROST.computeChallenge(...)` returns `challenge < Secp256k1.N`
         //    (it uses modular arithmetic).
         // 2. `challenge = 0` is checked.
         // thus `challenge % Secp256k1.N != 0`.
