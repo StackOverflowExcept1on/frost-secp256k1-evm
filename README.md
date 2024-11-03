@@ -1,4 +1,4 @@
-# frost-secp256k1-evm
+# frost-secp256k1-evm &mdash; cheap threshold signature scheme for EVM
 
 [![Build Status](https://github.com/StackOverflowExcept1on/frost-secp256k1-evm/actions/workflows/ci.yml/badge.svg)](https://github.com/StackOverflowExcept1on/frost-secp256k1-evm/actions/workflows/ci.yml)
 [![Latest Version](https://img.shields.io/crates/v/frost-secp256k1-evm.svg)](https://crates.io/crates/frost-secp256k1-evm)
@@ -20,7 +20,7 @@ least `t` (or more than `t`) of `n` participants sign message. The size of such 
 form, and it can be verified in $O(1)$ time, and verification is done by group public key, message and signature.
 
 This library can verify FROST signature `t` of `n` for $\approx 4200$ gas on any EVM network. ECDSA signatures would
-require at least $3000 * t$ gas, i.e. $O(t)$ time instead of $O(1)$. Threshold signatures are suitable for creating
+require at least $3000 \cdot t$ gas, i.e. $O(t)$ time instead of $O(1)$. Threshold signatures are suitable for creating
 multi-signature wallets, decentralized orgs, oracles, and many other EVM applications. Since threshold signature scheme
 uses group public key, participants remain completely anonymous, and they can generate their signature in asynchronous
 network using wrapper over FROST called [ROAST](https://github.com/StackOverflowExcept1on/roast). Only group public
