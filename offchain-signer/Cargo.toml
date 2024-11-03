@@ -5,5 +5,5 @@ edition = "2021"
 
 [dependencies]
 frost-secp256k1-evm = "2.0.0"
-rand = "0.8"
 k256 = "0.13"
+rand = "0.8"
