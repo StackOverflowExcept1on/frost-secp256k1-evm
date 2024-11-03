@@ -34,7 +34,11 @@ For creating FROST signature, see [`offchain-signer/`](./offchain-signer).
 
 ## Libraries
 
-TODO.
+```ml
+src
+├─ FROST - "Library for verifying `FROST-secp256k1-KECCAK256` signatures"
+└─ TranspiledFROST - "Transpiled library for verifying `FROST-secp256k1-KECCAK256` signatures"
+```
 
 ## Installation
 
