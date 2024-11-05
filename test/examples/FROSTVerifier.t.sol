@@ -2,7 +2,7 @@
 pragma solidity ^0.8.28;
 
 import {Test, console} from "forge-std/Test.sol";
-import {FROSTVerifier} from "examples/FROSTVerifier.sol";
+import {FROSTVerifier} from "./FROSTVerifier.sol";
 
 contract FROSTVerifierTest is Test {
     FROSTVerifier frostVerifier;

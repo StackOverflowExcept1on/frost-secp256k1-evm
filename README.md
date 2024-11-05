@@ -28,17 +28,9 @@ key (64 bytes) needs to be stored onchain, signatures are created offchain in as
 
 Learn more about FROST signatures with [:book: ZF FROST Book](https://frost.zfnd.org/frost.html).
 
-For usage examples, see [`examples/`](./examples).
+For usage examples, see [`test/examples/`](./test/examples).
 
 For creating FROST signature, see [`offchain-signer/`](./offchain-signer).
-
-## Libraries
-
-```ml
-src
-├─ FROST - "Library for verifying `FROST-secp256k1-KECCAK256` signatures"
-└─ TranspiledFROST - "Transpiled library for verifying `FROST-secp256k1-KECCAK256` signatures"
-```
 
 ## Installation
 
@@ -46,6 +38,92 @@ Install with [Foundry](https://getfoundry.sh):
 
 ```bash
 forge install StackOverflowExcept1on/frost-secp256k1-evm
+```
+
+## Libraries
+
+```ml
+frost-secp256k1-evm
+├─ FROST - "Library for verifying `FROST-secp256k1-KECCAK256` signatures"
+└─ TranspiledFROST - "Transpiled library for verifying `FROST-secp256k1-KECCAK256` signatures"
+```
+
+### FROST
+
+Library for verifying `FROST-secp256k1-KECCAK256` signatures.
+
+It's recommended to compile this library with the `--via-ir` flag (`via_ir = true` in `foundry.toml`) to avoid
+possible `"Stack too deep"` error and to reduce gas consumption.
+
+Library provides the following API:
+
+```solidity
+library FROST {
+    function isValidPublicKey(uint256 publicKeyX, uint256 publicKeyY) internal pure returns (bool) { ... }
+
+    function verifySignature(
+        uint256 publicKeyX,
+        uint256 publicKeyY,
+        uint256 signatureRX,
+        uint256 signatureRY,
+        uint256 signatureZ,
+        bytes32 messageHash
+    ) internal view returns (bool) { ... }
+}
+```
+
+#### Example usage
+
+Here is an example `FROSTCounter` contract. This is same `Counter` contract that is usually written when learning
+Solidity, but with one difference: if at least `t` (or more than `t`) of `n` participants sign
+`setNumber(uint256 newNumber)`, then `setNumber` is executed. The group key of participants is also stored in contract.
+
+```solidity
+// SPDX-License-Identifier: MIT
+pragma solidity ^0.8.28;
+
+import {FROST} from "frost-secp256k1-evm/FROST.sol";
+
+contract FROSTCounter {
+    uint256 public publicKeyX;
+    uint256 public publicKeyY;
+
+    uint256 public nonce;
+
+    uint256 public number;
+
+    constructor(uint256 _publicKeyX, uint256 _publicKeyY) {
+        require(FROST.isValidPublicKey(_publicKeyX, _publicKeyY));
+        publicKeyX = _publicKeyX;
+        publicKeyY = _publicKeyY;
+    }
+
+    function setNumber(uint256 newNumber, uint256 signatureRX, uint256 signatureRY, uint256 signatureZ) public {
+        bytes32 messageHash = keccak256(abi.encodePacked(address(this), nonce, newNumber));
+        // NOTE: `require(FROST.isValidPublicKey(...))` is checked in constructor
+        require(FROST.verifySignature(publicKeyX, publicKeyY, signatureRX, signatureRY, signatureZ, messageHash));
+        number = newNumber;
+        nonce++;
+    }
+
+    function increment(uint256 signatureRX, uint256 signatureRY, uint256 signatureZ) public {
+        uint256 newNumber = number + 1;
+        setNumber(newNumber, signatureRX, signatureRY, signatureZ);
+    }
+}
+```
+
+### TranspiledFROST
+
+Transpiled library for verifying `FROST-secp256k1-KECCAK256` signatures.
+
+Use `TranspiledFROST` instead of `FROST` if `--via-ir` is not available for some reason. It consists of inline
+assembly (language close to Ethereum Virtual Machine).
+
+#### Example usage
+
+```solidity
+import {TranspiledFROST as FROST} from "frost-secp256k1-evm/TranspiledFROST.sol";
 ```
 
 ## Contributing

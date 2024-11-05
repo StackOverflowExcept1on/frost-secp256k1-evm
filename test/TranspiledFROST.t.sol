@@ -15,6 +15,6 @@ contract TranspiledFROSTTest is Test {
             0xBDD6B6C184BAE9468F68A56ECB54EB768E6A369E4E1162F46B992FCEBE3B3CA2,
             0x4141414141414141414141414141414141414141414141414141414141414141
         );
-        vm.assertTrue(isValidSignature);
+        assertTrue(isValidSignature);
     }
 }
