@@ -94,7 +94,7 @@ library TranspiledFROST {
                 ret := 270
                 let var_memPtr := mload(0x40)
                 let usr$newFreePtr := add(var_memPtr, 288)
-                if or(gt(usr$newFreePtr, 0xffffffffffffffff), lt(usr$newFreePtr, var_memPtr)) { revert(0, 0) }
+                if or(gt(usr$newFreePtr, 0xFFFFFFFFFFFFFFFF), lt(usr$newFreePtr, var_memPtr)) { revert(0, 0) }
                 mstore(0x40, usr$newFreePtr)
                 calldatacopy(var_memPtr, calldatasize(), 0x88)
                 mstore8(add(var_memPtr, 0x88), add(and(var_signatureRY, 0x01), 0x02))
