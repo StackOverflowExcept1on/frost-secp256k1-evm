@@ -22,7 +22,7 @@ library Schnorr {
         //    since we also check `Secp256k1.isOnCurve(publicKeyX, publicKeyY)`,
         //    checking `publicKeyX != 0` is not needed because `publicKeyX = 0` is not on curve.
         //
-        //    this statement can also be verified using script: based on
+        //    this statement can also be verified using script:
         //    ```python
         //    A = 0
         //    B = 7
