@@ -17,7 +17,8 @@ contract MemoryTest is Test {
         assertEq(memPtr2, 0xC0);
     }
 
-    function testFails_AllocateWithOverflow() public pure {
+    function test_AllocateWithOverflow() public {
+        vm.expectRevert();
         Memory.allocate(type(uint64).max);
     }
 
