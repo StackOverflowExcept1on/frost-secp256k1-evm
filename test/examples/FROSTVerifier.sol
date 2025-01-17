@@ -22,8 +22,8 @@ contract FROSTVerifier {
 
     constructor() payable {
         // cargo run --release --manifest-path offchain-signer/Cargo.toml
-        uint256 _publicKeyX = 0xBC5E83C1F1B03CBB9CC4BAB889E6A970E1F4C5C65C5F89E8D9723D73B726CC3E;
-        uint256 _publicKeyY = 0xDBED58A60A09B1BAB5B9AA6601F6B0B71B3F7AD9172D110F4AF1904FBDBC6A34;
+        uint256 _publicKeyX = 0x355EEDCBB159977FA7F08B97D32BA7E413345FF9F3BB6FF9D48A857BCD429D52;
+        uint256 _publicKeyY = 0x3EC6F7DA9AE3EFCEC9F84EE894E840D672E9BF3E91C3025AFC4FDACE3DC0E0DC;
         require(FROST.isValidPublicKey(_publicKeyX, _publicKeyY));
         publicKeyX = _publicKeyX;
         publicKeyY = _publicKeyY;
