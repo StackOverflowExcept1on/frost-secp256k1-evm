@@ -41,6 +41,24 @@ library Secp256k1 {
     }
 
     /**
+     * @dev Checks if `scalar` is valid (`scalar` in `[0, Secp256k1.N)`).
+     * @param scalar Scalar.
+     * @return isValidScalar `true` if `scalar` is valid, `false` otherwise.
+     */
+    function isValidScalar(uint256 scalar) internal pure returns (bool) {
+        return scalar < N;
+    }
+
+    /**
+     * @dev Checks if `scalar` is valid non-zero scalar (`scalar` in `[1, Secp256k1.N)`).
+     * @param scalar Scalar.
+     * @return isValidNonZeroScalar `true` if `scalar` is valid non-zero scalar, `false` otherwise.
+     */
+    function isValidNonZeroScalar(uint256 scalar) internal pure returns (bool) {
+        return scalar != 0 && scalar < N;
+    }
+
+    /**
      * @dev Calculates `yParity` from public key y.
      * @param y Public key y.
      * @return yParity `0` if `y` is even, `1` if `y` is odd.

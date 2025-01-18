@@ -38,6 +38,18 @@ contract Secp256k1Test is Test {
         );
     }
 
+    function test_IsValidScalar() public pure {
+        assertTrue(Secp256k1.isValidScalar(0));
+        assertTrue(Secp256k1.isValidScalar(Secp256k1.N - 1));
+        assertFalse(Secp256k1.isValidScalar(Secp256k1.N));
+    }
+
+    function test_IsValidNonZeroScalar() public pure {
+        assertFalse(Secp256k1.isValidNonZeroScalar(0));
+        assertTrue(Secp256k1.isValidNonZeroScalar(Secp256k1.N - 1));
+        assertFalse(Secp256k1.isValidNonZeroScalar(Secp256k1.N));
+    }
+
     function test_YParity() public pure {
         assertEq(Secp256k1.yParity(0x98F66641CB0AE1776B463EBDEE3D77FE2658F021DB48E2C8AC7AB4C92F83621E), 0);
         assertEq(Secp256k1.yParity(0x0E994B14EA72F8C3EB95C71EF692575E775058332D7E52D0995CF8038871B67D), 1);
