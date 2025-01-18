@@ -142,7 +142,7 @@ library FROST {
      * @param signatureRY Signature R y.
      * @param signatureZ Signature Z.
      * @param messageHash Message hash.
-     * @return `true` if signature is valid, `false` otherwise.
+     * @return isValidSignature `true` if signature is valid, `false` otherwise.
      */
     function verifySignature(
         uint256 publicKeyX,

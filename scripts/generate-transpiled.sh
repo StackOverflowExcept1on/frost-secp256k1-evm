@@ -73,8 +73,9 @@ $FUNC_IS_VALID_PUBLIC_KEY
      * @dev Verifies \`FROST-secp256k1-KECCAK256\` signature by formula \$zG - cX = R$.
      *      - Public key (\$X$) must be checked with \`FROST.isValidPublicKey(publicKeyX, publicKeyY)\`.
      *      - Signature R (\$R$) must be on curve.
-     *      - Signature Z (\$z$).
-     *      - Challenge (\$c$) is computed via \`FROST.computeChallenge(...)\`.
+     *      - Signature Z (\$z$) must be in \`[1, Secp256k1.N)\`.
+     *      - Challenge (\$c$) is computed via \`FROST.computeChallenge(...)\`,
+     *        must be in \`[1, Secp256k1.N)\`.
      * @param publicKeyX Public key x.
      * @param publicKeyY Public key y.
      * @param signatureRX Signature R x.
