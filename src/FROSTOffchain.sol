@@ -29,6 +29,17 @@ library FROSTOffchain {
     }
 
     /**
+     * @dev Creates signing key from `scalar`.
+     * @dev Reverts if `scalar` is not valid non-zero scalar.
+     * @param scalar Valid non-zero scalar.
+     * @return signingKey Signing key.
+     */
+    function signingKeyFromScalar(uint256 scalar) internal pure returns (SigningKey) {
+        require(Secp256k1.isValidNonZeroScalar(scalar));
+        return SigningKey.wrap(scalar);
+    }
+
+    /**
      * @dev Returns signing key `signingKey` as valid non-zero `scalar`.
      * @return scalar valid non-zero `scalar`.
      */

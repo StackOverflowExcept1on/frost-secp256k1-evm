@@ -1,7 +1,7 @@
 // SPDX-License-Identifier: MIT
 pragma solidity ^0.8.28;
 
-import {Vm, Test, console} from "forge-std/Test.sol";
+import {Test, Vm, console} from "forge-std/Test.sol";
 import {FROST} from "src/FROST.sol";
 import {SigningKey, FROSTOffchain} from "src/FROSTOffchain.sol";
 

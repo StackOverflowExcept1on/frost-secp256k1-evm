@@ -45,6 +45,7 @@ forge install StackOverflowExcept1on/frost-secp256k1-evm
 ```ml
 frost-secp256k1-evm
 ├─ FROST - "Library for verifying `FROST-secp256k1-KECCAK256` signatures"
+├─ FROSTOffchain - "Library for creating `FROST-secp256k1-KECCAK256` signatures"
 └─ TranspiledFROST - "Transpiled library for verifying `FROST-secp256k1-KECCAK256` signatures"
 ```
 
@@ -109,6 +110,51 @@ contract FROSTCounter {
     function increment(uint256 signatureRX, uint256 signatureRY, uint256 signatureZ) public {
         uint256 newNumber = number + 1;
         setNumber(newNumber, signatureRX, signatureRY, signatureZ);
+    }
+}
+```
+
+### FROSTOffchain
+
+Library for creating `FROST-secp256k1-KECCAK256` signatures.
+
+This is useful for testing contracts such as `FROSTCounter`. It allows generating `SigningKey`, which can then be split
+into `n` participants with threshold `t` by function like [`frost_secp256k1_evm::keys::generate_with_dealer()`
+](https://docs.rs/frost-secp256k1-evm/latest/frost_secp256k1_evm/keys/fn.generate_with_dealer.html). However, when
+`SigningKey` is split via `frost_secp256k1_evm::keys::generate_with_dealer()`, it is removed (centralized dealer
+must do this so as not to know group private key and not to affect value in `FROSTCounter` contract). In this library,
+`SigningKey` is not removed, and you can use group private key to create signature that will allow to change values in
+`FROSTCounter` contract.
+
+#### Example usage
+
+```solidity
+// SPDX-License-Identifier: MIT
+pragma solidity ^0.8.28;
+
+import {Test, Vm, console} from "forge-std/Test.sol";
+import {FROST} from "frost-secp256k1-evm/FROST.sol";
+import {SigningKey, FROSTOffchain} from "frost-secp256k1-evm/FROSTOffchain.sol";
+
+contract MyContractTest is Test {
+    using FROSTOffchain for SigningKey;
+
+    function test_ExampleUsage() public {
+        SigningKey signingKey = FROSTOffchain.newSigningKey();
+
+        Vm.Wallet memory publicKey = vm.createWallet(signingKey.asScalar());
+
+        uint256 publicKeyX = publicKey.publicKeyX;
+        uint256 publicKeyY = publicKey.publicKeyY;
+
+        /* set `publicKeyX` and `publicKeyY` in contract such as `FROSTCounter` */
+
+        bytes32 messageHash = 0x4141414141414141414141414141414141414141414141414141414141414141;
+        (uint256 signatureRX, uint256 signatureRY, uint256 signatureZ) = signingKey.createSignature(messageHash);
+
+        /* pass `signatureRX`, `signatureRY`, `signatureZ` to contract such as `FROSTCounter` */
+
+        assertTrue(FROST.verifySignature(publicKeyX, publicKeyY, signatureRX, signatureRY, signatureZ, messageHash));
     }
 }
 ```
