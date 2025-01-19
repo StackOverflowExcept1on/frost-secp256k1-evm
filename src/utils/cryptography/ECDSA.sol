@@ -27,7 +27,7 @@ library ECDSA {
         view
         returns (uint256 recovered)
     {
-        // https://github.com/ethereum/solidity/blob/cb576b1ae351e28e7f7a3a1129557035d5439ffc/libsolidity/codegen/ir/IRGeneratorForStatements.cpp#L1634
+        // https://github.com/ethereum/solidity/blob/v0.8.28/libsolidity/codegen/ir/IRGeneratorForStatements.cpp#L1634
         Memory.writeWord(memPtr, 0x00, e);
         Memory.writeWord(memPtr, 0x20, v);
         Memory.writeWord(memPtr, 0x40, r);

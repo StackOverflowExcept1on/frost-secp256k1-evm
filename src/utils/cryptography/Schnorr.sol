@@ -39,7 +39,7 @@ library Schnorr {
         //    ```
         //
         //    this script is based on code from eth-keys:
-        //    https://github.com/ethereum/eth-keys/blob/d8d1ecc6e159dd1dd7b12d7a203f8a276fa2a8ba/eth_keys/backends/native/ecdsa.py#L165
+        //    https://github.com/ethereum/eth-keys/blob/v0.6.1/eth_keys/backends/native/ecdsa.py#L165
 
         return publicKeyX < Secp256k1.N && Secp256k1.isOnCurve(publicKeyX, publicKeyY);
     }
@@ -150,12 +150,12 @@ library Schnorr {
         // https://ethresear.ch/t/you-can-kinda-abuse-ecrecover-to-do-ecmul-in-secp256k1-today/2384
 
         // Schnorr's signature structure:
-        // https://github.com/ZcashFoundation/frost/blob/2d88edf1623ee29f671a43966aae0bd4ead2ea7a/frost-core/src/signature.rs#L9
+        // https://github.com/ZcashFoundation/frost/blob/frost-secp256k1/v2.1.0/frost-core/src/signature.rs#L10
         // Schnorr's challenge structure:
-        // https://github.com/ZcashFoundation/frost/blob/2d88edf1623ee29f671a43966aae0bd4ead2ea7a/frost-core/src/lib.rs#L69
+        // https://github.com/ZcashFoundation/frost/blob/frost-secp256k1/v2.1.0/frost-core/src/lib.rs#L68
 
         // Schnorr's signature verification formula: $zG - cX = R$:
-        // https://github.com/ZcashFoundation/frost/blob/2d88edf1623ee29f671a43966aae0bd4ead2ea7a/frost-core/src/verifying_key.rs#L54
+        // https://github.com/ZcashFoundation/frost/blob/frost-secp256k1/v2.1.0/frost-core/src/verifying_key.rs#L56
         // $zG - cX$ is calculated using `ECDSA.recover(memPtr, e, v, r, s)`.
         // $R$ is calculated using `Secp256k1.toAddress(signatureRX, signatureRY)`.
 
