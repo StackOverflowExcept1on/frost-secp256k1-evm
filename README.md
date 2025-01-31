@@ -30,7 +30,7 @@ Learn more about FROST signatures with [:book: ZF FROST Book](https://frost.zfnd
 
 For usage examples, see [`test/examples/`](./test/examples).
 
-For creating FROST signature, see [`offchain-signer/`](./offchain-signer).
+For creating FROST signature, see [`offchain-signer/`](./offchain-signer) and [`FROSTOffchain`](#frostoffchain).
 
 ## Installation
 
