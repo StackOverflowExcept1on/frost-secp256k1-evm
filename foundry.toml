@@ -3,6 +3,7 @@ src = "src"
 out = "out"
 libs = ["lib"]
 evm_version = "cancun"
+optimizer = true
 extra_output_files = ["irOptimized"]
 via_ir = true
 bytecode_hash = "none"
