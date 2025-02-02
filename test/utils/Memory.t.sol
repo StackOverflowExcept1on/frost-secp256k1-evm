@@ -17,6 +17,7 @@ contract MemoryTest is Test {
         assertEq(memPtr2, 0xC0);
     }
 
+    /// forge-config: default.allow_internal_expect_revert = true
     function test_AllocateWithOverflow() public {
         vm.expectRevert();
         Memory.allocate(type(uint64).max);
