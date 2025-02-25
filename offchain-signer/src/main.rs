@@ -1,6 +1,7 @@
 use frost_secp256k1_evm as frost;
 use k256::elliptic_curve::sec1::ToEncodedPoint;
-use rand::{rngs::StdRng, SeedableRng};
+use rand::SeedableRng;
+use rand_chacha::ChaChaRng;
 use std::collections::BTreeMap;
 
 fn convert_public_key(serialized: &[u8]) -> Vec<u8> {
@@ -23,7 +24,7 @@ fn slice2hex(slice: &[u8]) -> String {
 }
 
 fn main() -> Result<(), frost::Error> {
-    let mut rng = StdRng::seed_from_u64(123);
+    let mut rng = ChaChaRng::from_seed([0x42; 32]);
     let max_signers = 5;
     let min_signers = 3;
     let (shares, pubkey_package) = frost::keys::generate_with_dealer(
