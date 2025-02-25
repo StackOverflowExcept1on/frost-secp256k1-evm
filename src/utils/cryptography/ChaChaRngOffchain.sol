@@ -10,6 +10,10 @@ import {Secp256k1} from "./Secp256k1.sol";
  *      - https://docs.rs/rand_chacha/latest/rand_chacha/type.ChaChaRng.html
  */
 library ChaChaRngOffchain {
+    /**
+     * @dev Cheat code address, 0x7109709ECfa91a80626fF3989D68f67F5b1DD12D:
+     *      - https://github.com/foundry-rs/forge-std/blob/master/src/Base.sol
+     */
     Vm internal constant vm = Vm(address(uint160(uint256(keccak256("hevm cheat code")))));
 
     /**
