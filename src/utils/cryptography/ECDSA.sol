@@ -37,8 +37,7 @@ library ECDSA {
 
         // https://evm.codes/precompiled#0x01
         assembly ("memory-safe") {
-            let success := staticcall(gas(), 0x01, memPtr, 0x80, 0x00, 0x20)
-            if iszero(success) { revert(0x00, 0x00) }
+            pop(staticcall(gas(), 0x01, memPtr, 0x80, 0x00, 0x20))
             recovered := mload(0x00)
         }
     }

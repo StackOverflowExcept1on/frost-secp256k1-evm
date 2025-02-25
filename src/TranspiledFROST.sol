@@ -142,7 +142,7 @@ library TranspiledFROST {
                     )
                 )
                 mstore(0, 0)
-                if iszero(staticcall(gas(), 0x01, var_memPtr, 0x80, 0, 0x20)) { revert(0, 0) }
+                pop(staticcall(gas(), 0x01, var_memPtr, 0x80, 0, 0x20))
                 let var_recovered := mload(0)
                 mstore(0, var_signatureRX)
                 mstore(0x20, var_signatureRY)
