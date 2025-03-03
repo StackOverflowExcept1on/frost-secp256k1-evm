@@ -28,6 +28,14 @@ library Secp256k1 {
      * @dev Prime number, scalar `s` must be in `[0, Secp256k1.N)`, non-zero scalar must be in `[1, Secp256k1.N)`.
      */
     uint256 internal constant N = 0xFFFFFFFFFFFFFFFFFFFFFFFFFFFFFFFEBAAEDCE6AF48A03BBFD25E8CD0364141;
+    /**
+     * @dev X coordinate of generator point (`G`).
+     */
+    uint256 internal constant GX = 0x79BE667EF9DCBBAC55A06295CE870B07029BFCDB2DCE28D959F2815B16F81798;
+    /**
+     * @dev Y coordinate of generator point (`G`).
+     */
+    uint256 internal constant GY = 0x483ADA7726A3C4655DA4FBFC0E1108A8FD17B448A68554199C47D08FFB10D4B8;
 
     /**
      * @dev Checks if public key `(x, y)` is on curve.
