@@ -6,6 +6,18 @@ pragma solidity ^0.8.28;
  */
 library Memory {
     /**
+     * @dev Allocates chunk of memory of unbounded size.
+     * @dev Does not update free memory pointer.
+     * @return memPtr Pointer to allocated memory.
+     */
+    function allocateUnbounded() internal pure returns (uint256 memPtr) {
+        // https://github.com/ethereum/solidity/blob/v0.8.28/libsolidity/codegen/YulUtilFunctions.cpp#L3211
+        assembly ("memory-safe") {
+            memPtr := mload(0x40)
+        }
+    }
+
+    /**
      * @dev Allocates chunk of memory of given size, size aligned to 32 bytes.
      * @dev Reverts if aligned size + free memory pointer exceeds `type(uint64).max`.
      * @param size Size of memory chunk to allocate.
@@ -33,6 +45,18 @@ library Memory {
         // https://github.com/ethereum/solidity/blob/v0.8.28/libsolidity/codegen/YulUtilFunctions.cpp#L3253
         assembly ("memory-safe") {
             calldatacopy(dataStart, calldatasize(), dataSizeInBytes)
+        }
+    }
+
+    /**
+     * @dev Copies data from calldata to memory.
+     * @param memPtr Pointer to memory.
+     * @param offset Offset in memory.
+     * @param data Calldata to copy.
+     */
+    function copyFromCalldata(uint256 memPtr, uint256 offset, bytes calldata data) internal pure {
+        assembly ("memory-safe") {
+            calldatacopy(add(memPtr, offset), data.offset, data.length)
         }
     }
 
