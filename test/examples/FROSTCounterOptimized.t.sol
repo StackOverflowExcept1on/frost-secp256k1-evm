@@ -1,37 +1,48 @@
 // SPDX-License-Identifier: MIT
 pragma solidity ^0.8.28;
 
-import {Test, console} from "forge-std/Test.sol";
+import {Test, Vm, console} from "forge-std/Test.sol";
+import {SigningKey, FROSTOffchain} from "src/FROSTOffchain.sol";
 import {FROSTCounterOptimized} from "./FROSTCounterOptimized.sol";
 
 contract FROSTCounterOptimizedTest is Test {
+    using FROSTOffchain for SigningKey;
+
+    SigningKey signingKey;
     FROSTCounterOptimized frostCounter;
 
     function setUp() public {
+        uint256 scalar = 0xA4DDF31F7F32BA696F14CE50ECF3F21E3E100E83BDF47966E7B07468E9500B6E;
+        signingKey = FROSTOffchain.signingKeyFromScalar(scalar);
+
+        Vm.Wallet memory wallet = vm.createWallet(signingKey.asScalar());
+
+        uint256 publicKeyX = wallet.publicKeyX;
+        uint256 publicKeyY = wallet.publicKeyY;
+
+        assertEq(publicKeyX, 0x4F6340CFDD930A6F54E730188E3071D150877FA664945FB6F120C18B56CE1C09);
+        assertEq(publicKeyY, 0x802A5E67C00A70D85B9A088EAC7CF5B9FB46AC5C0B2BD7D1E189FAC210F6B7EF);
+
         frostCounter = new FROSTCounterOptimized();
         assertEq(address(frostCounter), DEFAULT_TEST_CONTRACT);
     }
 
     function test_SetNumber() public {
+        uint128 nonce = uint128(uint256(vm.load(address(frostCounter), bytes32(uint256(0)))));
         uint128 newNumber = 42;
-        frostCounter.setNumber(
-            newNumber,
-            0x91785E23DEC1B7DEEF15CF2EC5BD973868728B35F0FC435792A35B6CD367723A,
-            0x3C5455B649F8DC3532A6D7BC5280957C2299BF19C4E1BD1F23B7DC06455E855C,
-            0x9CDBF89F79DEC56B38AD66D302EC1475F0A43F5F41BA205E3BC6F1A65151AE52
-        );
+        bytes32 messageHash = keccak256(abi.encodePacked(DEFAULT_TEST_CONTRACT, uint256(nonce), uint256(newNumber)));
+        (uint256 signatureRX, uint256 signatureRY, uint256 signatureZ) = signingKey.createSignature(messageHash);
+        frostCounter.setNumber(newNumber, signatureRX, signatureRY, signatureZ);
         assertEq(
             uint256(vm.load(address(frostCounter), bytes32(uint256(0)))),
             uint256((uint256(newNumber) << 128) | uint256(1))
         );
 
+        nonce = uint128(uint256(vm.load(address(frostCounter), bytes32(uint256(0)))));
         newNumber = 43;
-        frostCounter.setNumber(
-            newNumber,
-            0xE993054A9C58EF3009A326AD26A3DE42D6E1B8DC23590EF2695E9E5F59474C52,
-            0xB9EB4EE5410AC35A8F0A6D27AD0A379036DD196A9D838314767B78475319E56C,
-            0x24CAA718B2EA9CCFC1A1E18B56C90A591B0B2EF2D131D731A69613170915CE02
-        );
+        messageHash = keccak256(abi.encodePacked(DEFAULT_TEST_CONTRACT, uint256(nonce), uint256(newNumber)));
+        (signatureRX, signatureRY, signatureZ) = signingKey.createSignature(messageHash);
+        frostCounter.setNumber(newNumber, signatureRX, signatureRY, signatureZ);
         assertEq(
             uint256(vm.load(address(frostCounter), bytes32(uint256(0)))),
             uint256((uint256(newNumber) << 128) | uint256(2))

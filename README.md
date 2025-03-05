@@ -142,10 +142,10 @@ contract MyContractTest is Test {
     function test_ExampleUsage() public {
         SigningKey signingKey = FROSTOffchain.newSigningKey();
 
-        Vm.Wallet memory publicKey = vm.createWallet(signingKey.asScalar());
+        Vm.Wallet memory wallet = vm.createWallet(signingKey.asScalar());
 
-        uint256 publicKeyX = publicKey.publicKeyX;
-        uint256 publicKeyY = publicKey.publicKeyY;
+        uint256 publicKeyX = wallet.publicKeyX;
+        uint256 publicKeyY = wallet.publicKeyY;
 
         /* set `publicKeyX` and `publicKeyY` in contract such as `FROSTCounter` */
 

@@ -37,10 +37,13 @@ contract FROSTOffchainTest is Test {
     function test_CreateSignature() public {
         SigningKey signingKey = FROSTOffchain.newSigningKey();
 
-        Vm.Wallet memory publicKey = vm.createWallet(signingKey.asScalar());
+        Vm.Wallet memory wallet = vm.createWallet(signingKey.asScalar());
 
-        uint256 publicKeyX = publicKey.publicKeyX;
-        uint256 publicKeyY = publicKey.publicKeyY;
+        uint256 privateKey = wallet.privateKey;
+        assertEq(privateKey, 0xA4DDF31F7F32BA696F14CE50ECF3F21E3E100E83BDF47966E7B07468E9500B6E);
+
+        uint256 publicKeyX = wallet.publicKeyX;
+        uint256 publicKeyY = wallet.publicKeyY;
 
         assertEq(publicKeyX, 0x4F6340CFDD930A6F54E730188E3071D150877FA664945FB6F120C18B56CE1C09);
         assertEq(publicKeyY, 0x802A5E67C00A70D85B9A088EAC7CF5B9FB46AC5C0B2BD7D1E189FAC210F6B7EF);
