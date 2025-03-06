@@ -20,7 +20,10 @@ contract FROSTCounterOptimized {
     function setNumber(uint128 newNumber, uint256 signatureRX, uint256 signatureRY, uint256 signatureZ) public {
         uint256 memPtr = Memory.allocate(96);
         Memory.writeWord(memPtr, 0, uint256(uint160(address(this))));
-        Memory.writeWord(memPtr, 32, nonce);
+        Memory.writeWord(memPtr, 32, uint256(nonce));
+        unchecked {
+            nonce++;
+        }
         Memory.writeWord(memPtr, 64, newNumber);
 
         bytes32 messageHash = bytes32(Hashes.efficientKeccak256(memPtr, 12, 84));
@@ -29,8 +32,5 @@ contract FROSTCounterOptimized {
         require(FROST.verifySignature(PUBLIC_KEY_X, PUBLIC_KEY_Y, signatureRX, signatureRY, signatureZ, messageHash));
 
         number = newNumber;
-        unchecked {
-            nonce++;
-        }
     }
 }
