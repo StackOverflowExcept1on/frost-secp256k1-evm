@@ -101,7 +101,7 @@ library FROST {
         Memory.writeWord(memPtr, offset, DOMAIN_SEPARATOR1);
         Memory.writeWord(memPtr, offset + LEN_IN_BYTES_U16_SIZE + ZERO_BYTE_SIZE + DOMAIN_PART1_SIZE, DOMAIN_SEPARATOR2);
 
-        uint256 b0 = Hashes.efficientKeccak256(memPtr, 0, CHALLENGE_SIZE);
+        uint256 b0 = Hashes.efficientKeccak256(memPtr, 0x00, CHALLENGE_SIZE);
 
         // https://github.com/RustCrypto/traits/blob/elliptic-curve-v0.13.8/elliptic-curve/src/hash2curve/hash2field/expand_msg/xmd.rs#L140
         // https://github.com/RustCrypto/traits/blob/elliptic-curve-v0.13.8/elliptic-curve/src/hash2curve/hash2field/expand_msg/xmd.rs#L110
