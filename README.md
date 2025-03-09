@@ -100,7 +100,8 @@ contract FROSTCounter {
     }
 
     function setNumber(uint256 newNumber, uint256 signatureRX, uint256 signatureRY, uint256 signatureZ) public {
-        bytes32 messageHash = keccak256(abi.encodePacked(address(this), nonce, newNumber));
+        bytes32 messageHash =
+            keccak256(abi.encodePacked(block.chainid, uint256(uint160(address(this))), nonce, newNumber));
         nonce++;
         // NOTE: `require(FROST.isValidPublicKey(...))` is checked in constructor
         require(FROST.verifySignature(publicKeyX, publicKeyY, signatureRX, signatureRY, signatureZ, messageHash));

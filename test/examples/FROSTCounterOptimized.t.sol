@@ -30,7 +30,11 @@ contract FROSTCounterOptimizedTest is Test {
     function test_SetNumber() public {
         uint128 nonce = uint128(uint256(vm.load(address(frostCounter), bytes32(uint256(0)))));
         uint128 newNumber = 42;
-        bytes32 messageHash = keccak256(abi.encodePacked(DEFAULT_TEST_CONTRACT, uint256(nonce), uint256(newNumber)));
+        bytes32 messageHash = keccak256(
+            abi.encodePacked(
+                block.chainid, uint256(uint160(address(DEFAULT_TEST_CONTRACT))), uint256(nonce), uint256(newNumber)
+            )
+        );
         (uint256 signatureRX, uint256 signatureRY, uint256 signatureZ) = signingKey.createSignature(messageHash);
         frostCounter.setNumber(newNumber, signatureRX, signatureRY, signatureZ);
         assertEq(
@@ -40,7 +44,11 @@ contract FROSTCounterOptimizedTest is Test {
 
         nonce = uint128(uint256(vm.load(address(frostCounter), bytes32(uint256(0)))));
         newNumber = 43;
-        messageHash = keccak256(abi.encodePacked(DEFAULT_TEST_CONTRACT, uint256(nonce), uint256(newNumber)));
+        messageHash = keccak256(
+            abi.encodePacked(
+                block.chainid, uint256(uint160(address(DEFAULT_TEST_CONTRACT))), uint256(nonce), uint256(newNumber)
+            )
+        );
         (signatureRX, signatureRY, signatureZ) = signingKey.createSignature(messageHash);
         frostCounter.setNumber(newNumber, signatureRX, signatureRY, signatureZ);
         assertEq(
