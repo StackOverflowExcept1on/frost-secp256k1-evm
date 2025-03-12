@@ -30,6 +30,13 @@ library Secp256k1Arithmetic {
      *      - https://eprint.iacr.org/2023/939.pdf
      */
     uint256 internal constant P_MINUS_2 = P - 2;
+    /**
+     * @dev Auxiliary constant $\frac{p + 1}{4}$, used during point decompression.
+     * @dev Square root of an secp256k1 field element `x` can be computed via `modexp(x, SQRT_EXPONENT, P)`:
+     *      - https://github.com/ethereum/eth-keys/blob/v0.6.1/eth_keys/backends/native/ecdsa.py#L163
+     *      - https://github.com/RustCrypto/elliptic-curves/blob/k256/v0.13.4/k256/src/arithmetic/field.rs#L206
+     */
+    uint256 internal constant SQRT_EXPONENT = (P + 1) / 4;
 
     /**
      * @dev Returns additive identity in affine coordinates.
@@ -121,6 +128,37 @@ library Secp256k1Arithmetic {
         uint256 y2 = mulmod(y1, z1Inv, P);
 
         return (x2, y2);
+    }
+
+    /**
+     * @dev Decompresses compressed affine point `(x, yCompressed)` to affine point `(x2, y2)`.
+     * @dev Reverts if `yCompressed` is not `2` or `3`, or if decompressed point is not on curve.
+     * @param memPtr Memory pointer for writing 192 bytes of input data.
+     * @param x Affine point x.
+     * @param yCompressed Affine point y (compressed).
+     * @return x2 Affine point x2.
+     * @return y2 Affine point y2.
+     */
+    function decompressToAffinePoint(uint256 memPtr, uint256 x, uint256 yCompressed)
+        internal
+        view
+        returns (uint256, uint256)
+    {
+        require(yCompressed == 2 || yCompressed == 3);
+
+        // https://github.com/RustCrypto/elliptic-curves/blob/k256/v0.13.4/k256/src/arithmetic/affine.rs#L187
+        uint256 alpha = addmod(mulmod(x, mulmod(x, x, P), P), B, P);
+        // https://github.com/ethereum/eth-keys/blob/v0.6.1/eth_keys/backends/native/ecdsa.py#L164
+        uint256 beta = ModExp.modexp(memPtr, alpha, SQRT_EXPONENT, P);
+
+        uint256 y;
+        unchecked {
+            y = beta & 1 == yCompressed & 1 ? beta : P - beta;
+        }
+
+        require(Secp256k1.isOnCurve(x, y));
+
+        return (x, y);
     }
 
     /**

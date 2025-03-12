@@ -7,6 +7,16 @@ import {Secp256k1} from "src/utils/cryptography/Secp256k1.sol";
 import {Secp256k1Arithmetic} from "src/utils/cryptography/Secp256k1Arithmetic.sol";
 import {Memory} from "src/utils/Memory.sol";
 
+contract Secp256k1ArithmeticWrapper {
+    function decompressToAffinePoint(uint256 memPtr, uint256 x, uint256 yCompressed)
+        external
+        view
+        returns (uint256, uint256)
+    {
+        return Secp256k1Arithmetic.decompressToAffinePoint(memPtr, x, yCompressed);
+    }
+}
+
 contract Secp256k1ArithmeticTest is Test {
     function test_IdentityAffinePoint() public pure {
         (uint256 x, uint256 y) = Secp256k1Arithmetic.identityAffinePoint();
@@ -81,6 +91,36 @@ contract Secp256k1ArithmeticTest is Test {
         (uint256 x3, uint256 y3) = Secp256k1Arithmetic.convertProjectivePointToAffinePoint(memPtr, x2, y2, z2);
         assertEq(x3, wallet.publicKeyX);
         assertEq(y3, wallet.publicKeyY);
+    }
+
+    function test_DecompressToAffinePoint() public {
+        uint256 scalar = ChaChaRngOffchain.randomNonZeroScalar();
+        Vm.Wallet memory wallet = vm.createWallet(scalar);
+        uint256 memPtr = Memory.allocate(192);
+        (uint256 x1, uint256 y1) = Secp256k1Arithmetic.decompressToAffinePoint(
+            memPtr, wallet.publicKeyX, Secp256k1.yCompressed(wallet.publicKeyY)
+        );
+        assertEq(x1, wallet.publicKeyX);
+        assertEq(y1, wallet.publicKeyY);
+    }
+
+    /// forge-config: default.allow_internal_expect_revert = true
+    function test_DecompressToAffinePointIncorrectYCompressed() public {
+        uint256 memPtr = Memory.allocate(192);
+        uint256 x = 1; // x = 1 is on curve
+        uint256 yCompressed = 0; // invalid yCompressed
+        vm.expectRevert();
+        Secp256k1Arithmetic.decompressToAffinePoint(memPtr, x, yCompressed);
+    }
+
+    function test_DecompressToAffinePointIncorrectX() public {
+        // unfortunately, here we have to use wrapper contract to test revert
+        Secp256k1ArithmeticWrapper wrapper = new Secp256k1ArithmeticWrapper();
+        uint256 memPtr = Memory.allocate(192);
+        uint256 x = 0; // x = 0 is not on curve
+        uint256 yCompressed = 2; // valid yCompressed
+        vm.expectRevert();
+        wrapper.decompressToAffinePoint(memPtr, x, yCompressed);
     }
 
     function test_AddProjectivePoint() public {
