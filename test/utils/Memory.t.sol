@@ -5,6 +5,18 @@ import {Test, console} from "forge-std/Test.sol";
 import {Memory} from "src/utils/Memory.sol";
 
 contract MemoryTest is Test {
+    function test_AllocateUnbounded() public pure {
+        Memory.allocateUnbounded();
+    }
+
+    function test_AllocateUnboundedWithPointerCheck() public pure {
+        uint256 memPtr1 = Memory.allocateUnbounded();
+        assertEq(memPtr1, 0x80);
+
+        uint256 memPtr2 = Memory.allocateUnbounded();
+        assertEq(memPtr2, 0x80);
+    }
+
     function test_Allocate() public pure {
         Memory.allocate(41);
     }
