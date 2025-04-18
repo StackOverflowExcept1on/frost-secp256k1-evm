@@ -24,16 +24,13 @@ contract FROSTCounterOptimizedTest is Test {
         assertEq(publicKeyY, 0x802A5E67C00A70D85B9A088EAC7CF5B9FB46AC5C0B2BD7D1E189FAC210F6B7EF);
 
         frostCounter = new FROSTCounterOptimized();
-        assertEq(address(frostCounter), DEFAULT_TEST_CONTRACT);
     }
 
     function test_SetNumber() public {
         uint128 nonce = uint128(uint256(vm.load(address(frostCounter), bytes32(uint256(0)))));
         uint128 newNumber = 42;
         bytes32 messageHash = keccak256(
-            abi.encodePacked(
-                block.chainid, uint256(uint160(address(DEFAULT_TEST_CONTRACT))), uint256(nonce), uint256(newNumber)
-            )
+            abi.encodePacked(block.chainid, uint256(uint160(address(frostCounter))), uint256(nonce), uint256(newNumber))
         );
         (uint256 signatureRX, uint256 signatureRY, uint256 signatureZ) = signingKey.createSignature(messageHash);
         frostCounter.setNumber(newNumber, signatureRX, signatureRY, signatureZ);
@@ -45,9 +42,7 @@ contract FROSTCounterOptimizedTest is Test {
         nonce = uint128(uint256(vm.load(address(frostCounter), bytes32(uint256(0)))));
         newNumber = 43;
         messageHash = keccak256(
-            abi.encodePacked(
-                block.chainid, uint256(uint160(address(DEFAULT_TEST_CONTRACT))), uint256(nonce), uint256(newNumber)
-            )
+            abi.encodePacked(block.chainid, uint256(uint160(address(frostCounter))), uint256(nonce), uint256(newNumber))
         );
         (signatureRX, signatureRY, signatureZ) = signingKey.createSignature(messageHash);
         frostCounter.setNumber(newNumber, signatureRX, signatureRY, signatureZ);

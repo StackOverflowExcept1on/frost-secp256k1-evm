@@ -93,7 +93,6 @@ contract FROSTWalletOptimizedTest is Test {
         assertEq(publicKeyY, 0x802A5E67C00A70D85B9A088EAC7CF5B9FB46AC5C0B2BD7D1E189FAC210F6B7EF);
 
         frostWallet = new FROSTWalletOptimized{value: 100 ether}();
-        assertEq(address(frostWallet), DEFAULT_TEST_CONTRACT);
     }
 
     function test_ExecuteTransaction() public {
