@@ -1,5 +1,5 @@
 // SPDX-License-Identifier: MIT
-pragma solidity ^0.8.28;
+pragma solidity ^0.8.30;
 
 import {ModExp} from "./ModExp.sol";
 import {Secp256k1} from "./Secp256k1.sol";

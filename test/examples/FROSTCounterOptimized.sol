@@ -1,5 +1,5 @@
 // SPDX-License-Identifier: MIT
-pragma solidity ^0.8.28;
+pragma solidity ^0.8.30;
 
 import {Hashes} from "src/utils/cryptography/Hashes.sol";
 import {Memory} from "src/utils/Memory.sol";

@@ -1,5 +1,5 @@
 // SPDX-License-Identifier: MIT
-pragma solidity ^0.8.28;
+pragma solidity ^0.8.30;
 
 /**
  * @dev Library for low-level memory interaction.
@@ -11,7 +11,7 @@ library Memory {
      * @return memPtr Pointer to allocated memory.
      */
     function allocateUnbounded() internal pure returns (uint256 memPtr) {
-        // https://github.com/ethereum/solidity/blob/v0.8.28/libsolidity/codegen/YulUtilFunctions.cpp#L3211
+        // https://github.com/ethereum/solidity/blob/v0.8.30/libsolidity/codegen/YulUtilFunctions.cpp#L3211
         assembly ("memory-safe") {
             memPtr := mload(0x40)
         }
@@ -24,12 +24,12 @@ library Memory {
      * @return memPtr Pointer to allocated memory.
      */
     function allocate(uint256 size) internal pure returns (uint256 memPtr) {
-        // https://github.com/ethereum/solidity/blob/v0.8.28/libsolidity/codegen/YulUtilFunctions.cpp#L3194
+        // https://github.com/ethereum/solidity/blob/v0.8.30/libsolidity/codegen/YulUtilFunctions.cpp#L3194
         assembly ("memory-safe") {
-            // https://github.com/ethereum/solidity/blob/v0.8.28/libsolidity/codegen/YulUtilFunctions.cpp#L3211
+            // https://github.com/ethereum/solidity/blob/v0.8.30/libsolidity/codegen/YulUtilFunctions.cpp#L3211
             memPtr := mload(0x40)
-            // https://github.com/ethereum/solidity/blob/v0.8.28/libsolidity/codegen/YulUtilFunctions.cpp#L3226
-            // https://github.com/ethereum/solidity/blob/v0.8.28/libsolidity/codegen/YulUtilFunctions.cpp#L693
+            // https://github.com/ethereum/solidity/blob/v0.8.30/libsolidity/codegen/YulUtilFunctions.cpp#L3226
+            // https://github.com/ethereum/solidity/blob/v0.8.30/libsolidity/codegen/YulUtilFunctions.cpp#L693
             let newFreePtr := add(memPtr, and(add(size, 31), not(31)))
             if or(gt(newFreePtr, 0xFFFFFFFFFFFFFFFF), lt(newFreePtr, memPtr)) { revert(0x00, 0x00) }
             mstore(0x40, newFreePtr)
@@ -42,7 +42,7 @@ library Memory {
      * @param dataSizeInBytes Size of memory chunk to zeroize.
      */
     function zeroize(uint256 dataStart, uint256 dataSizeInBytes) internal pure {
-        // https://github.com/ethereum/solidity/blob/v0.8.28/libsolidity/codegen/YulUtilFunctions.cpp#L3253
+        // https://github.com/ethereum/solidity/blob/v0.8.30/libsolidity/codegen/YulUtilFunctions.cpp#L3253
         assembly ("memory-safe") {
             calldatacopy(dataStart, calldatasize(), dataSizeInBytes)
         }

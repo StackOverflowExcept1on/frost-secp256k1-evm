@@ -81,7 +81,7 @@ Solidity, but with one difference: if at least `t` (or more than `t`) of `n` par
 
 ```solidity
 // SPDX-License-Identifier: MIT
-pragma solidity ^0.8.28;
+pragma solidity ^0.8.30;
 
 import {FROST} from "frost-secp256k1-evm/FROST.sol";
 
@@ -131,7 +131,7 @@ must do this so as not to know group private key and not to affect value in `FRO
 
 ```solidity
 // SPDX-License-Identifier: MIT
-pragma solidity ^0.8.28;
+pragma solidity ^0.8.30;
 
 import {Test, Vm, console} from "forge-std/Test.sol";
 import {FROST} from "frost-secp256k1-evm/FROST.sol";
