@@ -1,7 +1,7 @@
 // SPDX-License-Identifier: MIT
 pragma solidity ^0.8.30;
 
-import {Memory} from "../Memory.sol";
+import {Memory} from "src/utils/Memory.sol";
 
 /**
  * @dev Library for low-level modular exponentiation.
