@@ -31,12 +31,12 @@ import {FROST} from "./FROST.sol";
 contract Counter {
     constructor() payable {}
 
-    function method1(uint256 publicKeyX, uint256 publicKeyY, uint256 signatureRX, uint256 signatureRY, uint256 signatureZ, bytes32 messageHash) external payable {
-        require(FROST.verifySignature(publicKeyX, publicKeyY, signatureRX, signatureRY, signatureZ, messageHash));
+    function method1(uint256 publicKeyX, uint256 publicKeyY, uint256 signatureCommitmentX, uint256 signatureCommitmentY, uint256 signatureZ, bytes32 messageHash) external payable {
+        require(FROST.verifySignature(publicKeyX, publicKeyY, signatureCommitmentX, signatureCommitmentY, signatureZ, messageHash));
     }
 
-    function method2(uint256 publicKeyX, uint256 publicKeyY, uint256 signatureRX, uint256 signatureRY, uint256 signatureZ, bytes32 messageHash) external payable {
-        require(!FROST.verifySignature(publicKeyX, publicKeyY, signatureRX, signatureRY, signatureZ, messageHash));
+    function method2(uint256 publicKeyX, uint256 publicKeyY, uint256 signatureCommitmentX, uint256 signatureCommitmentY, uint256 signatureZ, bytes32 messageHash) external payable {
+        require(!FROST.verifySignature(publicKeyX, publicKeyY, signatureCommitmentX, signatureCommitmentY, signatureZ, messageHash));
     }
 }
 EOF
@@ -78,8 +78,8 @@ $FUNC_IS_VALID_PUBLIC_KEY
      *        must be in \`[1, Secp256k1.N)\`.
      * @param publicKeyX Public key x.
      * @param publicKeyY Public key y.
-     * @param signatureRX Signature R x.
-     * @param signatureRY Signature R y.
+     * @param signatureCommitmentX Signature commitment R x.
+     * @param signatureCommitmentY Signature commitment R y.
      * @param signatureZ Signature Z.
      * @param messageHash Message hash.
      * @return isValidSignature \`true\` if signature is valid, \`false\` otherwise.
@@ -87,15 +87,15 @@ $FUNC_IS_VALID_PUBLIC_KEY
     function verifySignature(
         uint256 publicKeyX,
         uint256 publicKeyY,
-        uint256 signatureRX,
-        uint256 signatureRY,
+        uint256 signatureCommitmentX,
+        uint256 signatureCommitmentY,
         uint256 signatureZ,
         bytes32 messageHash
     ) internal view returns (bool isValidSignature) {
         assembly ("memory-safe") {
 $FUNC_VERIFY_SIGNATURE
             isValidSignature :=
-                fun_verifySignature(publicKeyX, publicKeyY, signatureRX, signatureRY, signatureZ, messageHash)
+                fun_verifySignature(publicKeyX, publicKeyY, signatureCommitmentX, signatureCommitmentY, signatureZ, messageHash)
         }
     }
 }

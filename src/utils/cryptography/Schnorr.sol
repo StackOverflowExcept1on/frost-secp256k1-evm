@@ -47,14 +47,14 @@ library Schnorr {
     /**
      * @dev Verifies Schnorr signature by formula $zG - cX = R$.
      *      - Public key ($X$) must be checked with `Schnorr.isValidPublicKey(publicKeyX, publicKeyY)`.
-     *      - Signature R ($R$) must be checked with `Secp256k1.isOnCurve(signatureRX, signatureRY)`.
+     *      - Signature R ($R$) must be checked with `Secp256k1.isOnCurve(signatureCommitmentX, signatureCommitmentY)`.
      *      - Signature Z ($z$) must be checked with `signatureZ % Secp256k1.N != 0`.
      *      - Challenge ($c$) must be checked with `challenge % Secp256k1.N != 0`.
      * @param memPtr Memory pointer for writing 128 bytes of input data.
      * @param publicKeyX Public key x.
      * @param publicKeyY Public key y.
-     * @param signatureRX Signature R x.
-     * @param signatureRY Signature R y.
+     * @param signatureCommitmentX Signature commitment R x.
+     * @param signatureCommitmentY Signature commitment R y.
      * @param signatureZ Signature Z.
      * @param challenge Challenge.
      * @return `true` if signature is valid, `false` otherwise.
@@ -63,8 +63,8 @@ library Schnorr {
         uint256 memPtr,
         uint256 publicKeyX,
         uint256 publicKeyY,
-        uint256 signatureRX,
-        uint256 signatureRY,
+        uint256 signatureCommitmentX,
+        uint256 signatureCommitmentY,
         uint256 signatureZ,
         uint256 challenge
     ) internal view returns (bool) {
@@ -157,7 +157,7 @@ library Schnorr {
         // Schnorr's signature verification formula: $zG - cX = R$:
         // https://github.com/ZcashFoundation/frost/blob/frost-secp256k1/v2.1.0/frost-core/src/verifying_key.rs#L56
         // $zG - cX$ is calculated using `ECDSA.recover(memPtr, e, v, r, s)`.
-        // $R$ is calculated using `Secp256k1.toAddress(signatureRX, signatureRY)`.
+        // $R$ is calculated using `Secp256k1.toAddress(signatureCommitmentX, signatureCommitmentY)`.
 
         // how $zG - cX$ is calculated using `ECDSA.recover(memPtr, e, v, r, s)`?
         // `ecrecover(e, v, r, s)` works according to formula $Q = r^{-1} \( sR - eG \)$.
@@ -177,11 +177,11 @@ library Schnorr {
         // point $R$ is public key, see `ECDSA.recover(memPtr, e, v, r, s)` documentation for details.
 
         // `ECDSA.recover(memPtr, e, v, r, s)` returns 160-bit Ethereum address instead of public key,
-        // so we also need to convert Signature R to Ethereum address using `Secp256k1.toAddress(signatureRX, signatureRY)`.
+        // so we also need to convert Signature commitment R to Ethereum address using `Secp256k1.toAddress(signatureCommitmentX, signatureCommitmentY)`.
 
         // we also previously checked that Signature R is on curve using
-        // `Secp256k1.isOnCurve(signatureRX, signatureRY)`.
+        // `Secp256k1.isOnCurve(signatureCommitmentX, signatureCommitmentY)`.
 
-        return ECDSA.recover(memPtr, e, v, r, s) == Secp256k1.toAddress(signatureRX, signatureRY);
+        return ECDSA.recover(memPtr, e, v, r, s) == Secp256k1.toAddress(signatureCommitmentX, signatureCommitmentY);
     }
 }

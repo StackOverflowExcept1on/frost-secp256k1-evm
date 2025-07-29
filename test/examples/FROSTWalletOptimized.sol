@@ -20,8 +20,8 @@ contract FROSTWalletOptimized {
         address to,
         uint256 value,
         bytes calldata data,
-        uint256 signatureRX,
-        uint256 signatureRY,
+        uint256 signatureCommitmentX,
+        uint256 signatureCommitmentY,
         uint256 signatureZ
     ) external payable {
         uint256 size;
@@ -46,7 +46,11 @@ contract FROSTWalletOptimized {
         bytes32 messageHash = bytes32(Hashes.efficientKeccak256(memPtr, 0x00, 0xc0));
 
         // NOTE: `require(FROST.isValidPublicKey(...))` is checked in constructor
-        require(FROST.verifySignature(PUBLIC_KEY_X, PUBLIC_KEY_Y, signatureRX, signatureRY, signatureZ, messageHash));
+        require(
+            FROST.verifySignature(
+                PUBLIC_KEY_X, PUBLIC_KEY_Y, signatureCommitmentX, signatureCommitmentY, signatureZ, messageHash
+            )
+        );
 
         bool success;
         assembly ("memory-safe") {

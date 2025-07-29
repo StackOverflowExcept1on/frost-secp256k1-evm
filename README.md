@@ -65,8 +65,8 @@ library FROST {
     function verifySignature(
         uint256 publicKeyX,
         uint256 publicKeyY,
-        uint256 signatureRX,
-        uint256 signatureRY,
+        uint256 signatureCommitmentX,
+        uint256 signatureCommitmentY,
         uint256 signatureZ,
         bytes32 messageHash
     ) internal view returns (bool) { ... }
@@ -99,18 +99,29 @@ contract FROSTCounter {
         publicKeyY = _publicKeyY;
     }
 
-    function setNumber(uint256 newNumber, uint256 signatureRX, uint256 signatureRY, uint256 signatureZ) public {
+    function setNumber(
+        uint256 newNumber,
+        uint256 signatureCommitmentX,
+        uint256 signatureCommitmentY,
+        uint256 signatureZ
+    ) public {
+        /// forge-lint: disable-start(asm-keccak256)
         bytes32 messageHash =
             keccak256(abi.encodePacked(block.chainid, uint256(uint160(address(this))), nonce, newNumber));
+        /// forge-lint: disable-end(asm-keccak256)
         nonce++;
         // NOTE: `require(FROST.isValidPublicKey(...))` is checked in constructor
-        require(FROST.verifySignature(publicKeyX, publicKeyY, signatureRX, signatureRY, signatureZ, messageHash));
+        require(
+            FROST.verifySignature(
+                publicKeyX, publicKeyY, signatureCommitmentX, signatureCommitmentY, signatureZ, messageHash
+            )
+        );
         number = newNumber;
     }
 
-    function increment(uint256 signatureRX, uint256 signatureRY, uint256 signatureZ) public {
+    function increment(uint256 signatureCommitmentX, uint256 signatureCommitmentY, uint256 signatureZ) public {
         uint256 newNumber = number + 1;
-        setNumber(newNumber, signatureRX, signatureRY, signatureZ);
+        setNumber(newNumber, signatureCommitmentX, signatureCommitmentY, signatureZ);
     }
 }
 ```
@@ -133,7 +144,7 @@ must do this so as not to know group private key and not to affect value in `FRO
 // SPDX-License-Identifier: MIT
 pragma solidity ^0.8.30;
 
-import {Test, Vm, console} from "forge-std/Test.sol";
+import {Test, Vm} from "forge-std/Test.sol";
 import {FROST} from "frost-secp256k1-evm/FROST.sol";
 import {SigningKey, FROSTOffchain} from "frost-secp256k1-evm/FROSTOffchain.sol";
 
@@ -151,11 +162,16 @@ contract MyContractTest is Test {
         /* set `publicKeyX` and `publicKeyY` in contract such as `FROSTCounter` */
 
         bytes32 messageHash = 0x4141414141414141414141414141414141414141414141414141414141414141;
-        (uint256 signatureRX, uint256 signatureRY, uint256 signatureZ) = signingKey.createSignature(messageHash);
+        (uint256 signatureCommitmentX, uint256 signatureCommitmentY, uint256 signatureZ) =
+            signingKey.createSignature(messageHash);
 
-        /* pass `signatureRX`, `signatureRY`, `signatureZ` to contract such as `FROSTCounter` */
+        /* pass `signatureCommitmentX`, `signatureCommitmentY`, `signatureZ` to contract such as `FROSTCounter` */
 
-        assertTrue(FROST.verifySignature(publicKeyX, publicKeyY, signatureRX, signatureRY, signatureZ, messageHash));
+        assertTrue(
+            FROST.verifySignature(
+                publicKeyX, publicKeyY, signatureCommitmentX, signatureCommitmentY, signatureZ, messageHash
+            )
+        );
     }
 }
 ```

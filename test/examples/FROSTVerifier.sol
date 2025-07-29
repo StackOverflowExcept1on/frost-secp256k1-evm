@@ -29,11 +29,17 @@ contract FROSTVerifier {
         publicKeyY = _publicKeyY;
     }
 
-    function verifySignature(uint256 signatureRX, uint256 signatureRY, uint256 signatureZ, bytes32 messageHash)
-        external
-        payable
-    {
+    function verifySignature(
+        uint256 signatureCommitmentX,
+        uint256 signatureCommitmentY,
+        uint256 signatureZ,
+        bytes32 messageHash
+    ) external payable {
         // NOTE: `FROST.isValidPublicKey(...)` is checked at compile time
-        require(FROST.verifySignature(publicKeyX, publicKeyY, signatureRX, signatureRY, signatureZ, messageHash));
+        require(
+            FROST.verifySignature(
+                publicKeyX, publicKeyY, signatureCommitmentX, signatureCommitmentY, signatureZ, messageHash
+            )
+        );
     }
 }

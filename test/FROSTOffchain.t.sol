@@ -1,7 +1,7 @@
 // SPDX-License-Identifier: MIT
 pragma solidity ^0.8.30;
 
-import {Test, Vm, console} from "forge-std/Test.sol";
+import {Test, Vm} from "forge-std/Test.sol";
 import {FROST} from "src/FROST.sol";
 import {SigningKey, FROSTOffchain} from "src/FROSTOffchain.sol";
 
@@ -50,12 +50,17 @@ contract FROSTOffchainTest is Test {
 
         bytes32 messageHash = 0x4141414141414141414141414141414141414141414141414141414141414141;
 
-        (uint256 signatureRX, uint256 signatureRY, uint256 signatureZ) = signingKey.createSignature(messageHash);
+        (uint256 signatureCommitmentX, uint256 signatureCommitmentY, uint256 signatureZ) =
+            signingKey.createSignature(messageHash);
 
-        assertEq(signatureRX, 0x01B0906E61AD4FCB2B91129D75723A1C6CD03D56B52A6A78A155292F0CF558E7);
-        assertEq(signatureRY, 0xB4AFD878B61315BC5288973744B9B569B9014B32FFC88F90AA511DE056D29D60);
+        assertEq(signatureCommitmentX, 0x01B0906E61AD4FCB2B91129D75723A1C6CD03D56B52A6A78A155292F0CF558E7);
+        assertEq(signatureCommitmentY, 0xB4AFD878B61315BC5288973744B9B569B9014B32FFC88F90AA511DE056D29D60);
         assertEq(signatureZ, 0x9C626F590D090702BE5396079D5A8644CC7099AC80B7A7F8CD4574E7E464CCA7);
 
-        assertTrue(FROST.verifySignature(publicKeyX, publicKeyY, signatureRX, signatureRY, signatureZ, messageHash));
+        assertTrue(
+            FROST.verifySignature(
+                publicKeyX, publicKeyY, signatureCommitmentX, signatureCommitmentY, signatureZ, messageHash
+            )
+        );
     }
 }

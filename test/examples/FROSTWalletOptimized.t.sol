@@ -1,11 +1,12 @@
 // SPDX-License-Identifier: MIT
 pragma solidity ^0.8.30;
 
-import {Test, Vm, console} from "forge-std/Test.sol";
+import {Test, Vm} from "forge-std/Test.sol";
 import {SigningKey, FROSTOffchain} from "src/FROSTOffchain.sol";
 import {FROSTWalletOptimized} from "./FROSTWalletOptimized.sol";
 
 library FROSTWalletOptimizedTestHelper {
+    /// forge-lint: disable-next-item(screaming-snake-case-const)
     Vm internal constant vm = Vm(address(uint160(uint256(keccak256("hevm cheat code")))));
 
     using FROSTWalletOptimizedTestHelper for FROSTWalletOptimized;
@@ -62,8 +63,11 @@ contract ReentrancyAttackToFROSTWalletOptimized {
     function executeTransaction5112088248() public {
         (address to, uint256 value, bytes memory data) = (address(this), 1 ether, "");
         bytes32 messageHash = frostWallet.getMessageHashWithNonce(to, value, data, nonce);
-        (uint256 signatureRX, uint256 signatureRY, uint256 signatureZ) = signingKey.createSignature(messageHash);
-        frostWallet.executeTransaction5112088248(to, value, data, signatureRX, signatureRY, signatureZ);
+        (uint256 signatureCommitmentX, uint256 signatureCommitmentY, uint256 signatureZ) =
+            signingKey.createSignature(messageHash);
+        frostWallet.executeTransaction5112088248(
+            to, value, data, signatureCommitmentX, signatureCommitmentY, signatureZ
+        );
     }
 
     receive() external payable {
@@ -98,18 +102,26 @@ contract FROSTWalletOptimizedTest is Test {
     function test_ExecuteTransaction() public {
         (address to, uint256 value, bytes memory data) = FROSTWalletOptimizedTestHelper.getTranscationData();
         bytes32 messageHash = frostWallet.getMessageHash(to, value, data);
-        (uint256 signatureRX, uint256 signatureRY, uint256 signatureZ) = signingKey.createSignature(messageHash);
-        frostWallet.executeTransaction5112088248(to, value, data, signatureRX, signatureRY, signatureZ);
+        (uint256 signatureCommitmentX, uint256 signatureCommitmentY, uint256 signatureZ) =
+            signingKey.createSignature(messageHash);
+        frostWallet.executeTransaction5112088248(
+            to, value, data, signatureCommitmentX, signatureCommitmentY, signatureZ
+        );
     }
 
     function test_ExecuteTransactionWithSignatureReplayAttack() public {
         (address to, uint256 value, bytes memory data) = FROSTWalletOptimizedTestHelper.getTranscationData();
         bytes32 messageHash = frostWallet.getMessageHash(to, value, data);
-        (uint256 signatureRX, uint256 signatureRY, uint256 signatureZ) = signingKey.createSignature(messageHash);
-        frostWallet.executeTransaction5112088248(to, value, data, signatureRX, signatureRY, signatureZ);
+        (uint256 signatureCommitmentX, uint256 signatureCommitmentY, uint256 signatureZ) =
+            signingKey.createSignature(messageHash);
+        frostWallet.executeTransaction5112088248(
+            to, value, data, signatureCommitmentX, signatureCommitmentY, signatureZ
+        );
 
         vm.expectRevert();
-        frostWallet.executeTransaction5112088248(to, value, data, signatureRX, signatureRY, signatureZ);
+        frostWallet.executeTransaction5112088248(
+            to, value, data, signatureCommitmentX, signatureCommitmentY, signatureZ
+        );
     }
 
     function test_ExecuteTransactionWithReentrancyAttack() public {

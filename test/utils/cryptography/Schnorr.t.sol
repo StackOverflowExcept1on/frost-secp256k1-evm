@@ -1,10 +1,9 @@
 // SPDX-License-Identifier: MIT
 pragma solidity ^0.8.30;
 
-import {Test, console} from "forge-std/Test.sol";
+import {Test} from "forge-std/Test.sol";
 import {Schnorr} from "src/utils/cryptography/Schnorr.sol";
 import {Secp256k1} from "src/utils/cryptography/Secp256k1.sol";
-import {Memory} from "src/utils/Memory.sol";
 import {FROST} from "src/FROST.sol";
 
 contract SchnorrTest is Test {
@@ -48,20 +47,22 @@ contract SchnorrTest is Test {
         uint256 publicKeyY = 0x802A5E67C00A70D85B9A088EAC7CF5B9FB46AC5C0B2BD7D1E189FAC210F6B7EF;
         assertTrue(Schnorr.isValidPublicKey(publicKeyX, publicKeyY));
 
-        uint256 signatureRX = 0xDF70C2D9D0BC0711BD338F95527A4545F8BB3530B3A90E07B34DF5B0F298DED1;
-        uint256 signatureRY = 0xA84975B1488E6EA60530A3BDB74B2E7C9F0217769CBF0F2565744A353B919554;
-        assertTrue(Secp256k1.isOnCurve(signatureRX, signatureRY));
+        uint256 signatureCommitmentX = 0xDF70C2D9D0BC0711BD338F95527A4545F8BB3530B3A90E07B34DF5B0F298DED1;
+        uint256 signatureCommitmentY = 0xA84975B1488E6EA60530A3BDB74B2E7C9F0217769CBF0F2565744A353B919554;
+        assertTrue(Secp256k1.isOnCurve(signatureCommitmentX, signatureCommitmentY));
 
         uint256 signatureZ = 0xB164EC237AF7EA1AF309EBDB6AA9588FCB821FB1E3AD32315A95D59A7F0A4600;
         assertTrue(signatureZ % Secp256k1.N != 0);
 
         bytes32 messageHash = bytes32(uint256(0x4141414141414141414141414141414141414141414141414141414141414141));
         (uint256 memPtr, uint256 challenge) =
-            FROST.computeChallenge(publicKeyX, publicKeyY, signatureRX, signatureRY, messageHash);
+            FROST.computeChallenge(publicKeyX, publicKeyY, signatureCommitmentX, signatureCommitmentY, messageHash);
         assertTrue(challenge % Secp256k1.N != 0);
 
         assertTrue(
-            Schnorr.verifySignature(memPtr, publicKeyX, publicKeyY, signatureRX, signatureRY, signatureZ, challenge)
+            Schnorr.verifySignature(
+                memPtr, publicKeyX, publicKeyY, signatureCommitmentX, signatureCommitmentY, signatureZ, challenge
+            )
         );
     }
 }

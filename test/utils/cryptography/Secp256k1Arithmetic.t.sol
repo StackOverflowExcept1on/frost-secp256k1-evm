@@ -1,7 +1,7 @@
 // SPDX-License-Identifier: MIT
 pragma solidity ^0.8.30;
 
-import {Test, Vm, console} from "forge-std/Test.sol";
+import {Test, Vm} from "forge-std/Test.sol";
 import {ChaChaRngOffchain} from "src/utils/cryptography/ChaChaRngOffchain.sol";
 import {Secp256k1} from "src/utils/cryptography/Secp256k1.sol";
 import {Secp256k1Arithmetic} from "src/utils/cryptography/Secp256k1Arithmetic.sol";

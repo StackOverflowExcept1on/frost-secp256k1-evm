@@ -46,8 +46,8 @@ library TranspiledFROST {
      *        must be in `[1, Secp256k1.N)`.
      * @param publicKeyX Public key x.
      * @param publicKeyY Public key y.
-     * @param signatureRX Signature R x.
-     * @param signatureRY Signature R y.
+     * @param signatureCommitmentX Signature commitment R x.
+     * @param signatureCommitmentY Signature commitment R y.
      * @param signatureZ Signature Z.
      * @param messageHash Message hash.
      * @return isValidSignature `true` if signature is valid, `false` otherwise.
@@ -55,23 +55,28 @@ library TranspiledFROST {
     function verifySignature(
         uint256 publicKeyX,
         uint256 publicKeyY,
-        uint256 signatureRX,
-        uint256 signatureRY,
+        uint256 signatureCommitmentX,
+        uint256 signatureCommitmentY,
         uint256 signatureZ,
         bytes32 messageHash
     ) internal view returns (bool isValidSignature) {
         assembly ("memory-safe") {
             function fun_verifySignature(
-                var_publicKeyX, var_publicKeyY, var_signatureRX, var_signatureRY, var_signatureZ, var_messageHash
+                var_publicKeyX,
+                var_publicKeyY,
+                var_signatureCommitmentX,
+                var_signatureCommitmentY,
+                var_signatureZ,
+                var_messageHash
             ) -> var {
                 var := 0
                 if iszero(
                     eq(
-                        mulmod(var_signatureRY, var_signatureRY, not(0x01000003d0)),
+                        mulmod(var_signatureCommitmentY, var_signatureCommitmentY, not(0x01000003d0)),
                         addmod(
                             mulmod(
-                                var_signatureRX,
-                                mulmod(var_signatureRX, var_signatureRX, not(0x01000003d0)),
+                                var_signatureCommitmentX,
+                                mulmod(var_signatureCommitmentX, var_signatureCommitmentX, not(0x01000003d0)),
                                 not(0x01000003d0)
                             ),
                             0x07,
@@ -98,8 +103,8 @@ library TranspiledFROST {
                 if or(gt(usr$newFreePtr, 0xFFFFFFFFFFFFFFFF), lt(usr$newFreePtr, var_memPtr)) { revert(0, 0) }
                 mstore(0x40, usr$newFreePtr)
                 calldatacopy(var_memPtr, calldatasize(), 0x88)
-                mstore8(add(var_memPtr, 0x88), add(and(var_signatureRY, 0x01), 0x02))
-                mstore(add(var_memPtr, 137), var_signatureRX)
+                mstore8(add(var_memPtr, 0x88), add(and(var_signatureCommitmentY, 0x01), 0x02))
+                mstore(add(var_memPtr, 137), var_signatureCommitmentX)
                 mstore8(add(var_memPtr, 169), add(expr, 0x02))
                 mstore(add(var_memPtr, 170), var_publicKeyX)
                 mstore(add(var_memPtr, 202), var_messageHash)
@@ -144,12 +149,14 @@ library TranspiledFROST {
                 mstore(0, 0)
                 pop(staticcall(gas(), 0x01, var_memPtr, 0x80, 0, 0x20))
                 let var_recovered := mload(0)
-                mstore(0, var_signatureRX)
-                mstore(0x20, var_signatureRY)
+                mstore(0, var_signatureCommitmentX)
+                mstore(0x20, var_signatureCommitmentY)
                 var := eq(var_recovered, and(keccak256(0, 0x40), sub(shl(160, 1), 1)))
             }
             isValidSignature :=
-                fun_verifySignature(publicKeyX, publicKeyY, signatureRX, signatureRY, signatureZ, messageHash)
+                fun_verifySignature(
+                    publicKeyX, publicKeyY, signatureCommitmentX, signatureCommitmentY, signatureZ, messageHash
+                )
         }
     }
 }

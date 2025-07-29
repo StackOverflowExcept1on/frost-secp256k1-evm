@@ -1,7 +1,6 @@
 // SPDX-License-Identifier: MIT
 pragma solidity ^0.8.30;
 
-import {ECDSA} from "./utils/cryptography/ECDSA.sol";
 import {Hashes} from "./utils/cryptography/Hashes.sol";
 import {Schnorr} from "./utils/cryptography/Schnorr.sol";
 import {Secp256k1} from "./utils/cryptography/Secp256k1.sol";
@@ -62,8 +61,8 @@ library FROST {
      * @dev Computes challenge for `FROST-secp256k1-KECCAK256` signature.
      * @param publicKeyX Public key x.
      * @param publicKeyY Public key y.
-     * @param signatureRX Signature R x.
-     * @param signatureRY Signature R y.
+     * @param signatureCommitmentX Signature commitment R x.
+     * @param signatureCommitmentY Signature commitment R y.
      * @param messageHash Message hash.
      * @return memPtr Pointer to allocated memory, memory size is `FROST.CHALLENGE_SIZE`.
      * @return challenge Challenge.
@@ -71,8 +70,8 @@ library FROST {
     function computeChallenge(
         uint256 publicKeyX,
         uint256 publicKeyY,
-        uint256 signatureRX,
-        uint256 signatureRY,
+        uint256 signatureCommitmentX,
+        uint256 signatureCommitmentY,
         bytes32 messageHash
     ) internal pure returns (uint256, uint256) {
         // https://github.com/ZcashFoundation/frost/blob/frost-secp256k1/v2.1.0/frost-core/src/lib.rs#L118
@@ -80,7 +79,7 @@ library FROST {
         // https://github.com/ZcashFoundation/frost/blob/frost-secp256k1/v2.1.0/frost-secp256k1/src/lib.rs#L161
 
         uint256 publicKeyYCompressed = Secp256k1.yCompressed(publicKeyY);
-        uint256 signatureRYCompressed = Secp256k1.yCompressed(signatureRY);
+        uint256 signatureCommitmentYCompressed = Secp256k1.yCompressed(signatureCommitmentY);
 
         // https://github.com/RustCrypto/traits/blob/elliptic-curve-v0.13.8/elliptic-curve/src/hash2curve/hash2field.rs#L35
         // https://github.com/RustCrypto/traits/blob/elliptic-curve-v0.13.8/elliptic-curve/src/hash2curve/hash2field/expand_msg/xmd.rs#L43
@@ -89,8 +88,8 @@ library FROST {
 
         Memory.zeroize(memPtr, KECCAK256_BLOCK_SIZE);
 
-        Memory.writeByte(memPtr, KECCAK256_BLOCK_SIZE, signatureRYCompressed);
-        Memory.writeWord(memPtr, KECCAK256_BLOCK_SIZE + PUBLIC_KEY_Y_PARITY_SIZE, signatureRX);
+        Memory.writeByte(memPtr, KECCAK256_BLOCK_SIZE, signatureCommitmentYCompressed);
+        Memory.writeWord(memPtr, KECCAK256_BLOCK_SIZE + PUBLIC_KEY_Y_PARITY_SIZE, signatureCommitmentX);
 
         Memory.writeByte(memPtr, KECCAK256_BLOCK_SIZE + PUBLIC_KEY_SIZE, publicKeyYCompressed);
         Memory.writeWord(memPtr, KECCAK256_BLOCK_SIZE + PUBLIC_KEY_SIZE + PUBLIC_KEY_Y_PARITY_SIZE, publicKeyX);
@@ -138,8 +137,8 @@ library FROST {
      *        must be in `[1, Secp256k1.N)`.
      * @param publicKeyX Public key x.
      * @param publicKeyY Public key y.
-     * @param signatureRX Signature R x.
-     * @param signatureRY Signature R y.
+     * @param signatureCommitmentX Signature commitment R x.
+     * @param signatureCommitmentY Signature commitment R y.
      * @param signatureZ Signature Z.
      * @param messageHash Message hash.
      * @return isValidSignature `true` if signature is valid, `false` otherwise.
@@ -147,8 +146,8 @@ library FROST {
     function verifySignature(
         uint256 publicKeyX,
         uint256 publicKeyY,
-        uint256 signatureRX,
-        uint256 signatureRY,
+        uint256 signatureCommitmentX,
+        uint256 signatureCommitmentY,
         uint256 signatureZ,
         bytes32 messageHash
     ) internal view returns (bool) {
@@ -156,7 +155,7 @@ library FROST {
         // https://github.com/ZcashFoundation/frost/blob/frost-secp256k1/v2.1.0/frost-core/src/traits.rs#L252
         // https://github.com/ZcashFoundation/frost/blob/frost-secp256k1/v2.1.0/frost-core/src/verifying_key.rs#L56
 
-        if (!Secp256k1.isOnCurve(signatureRX, signatureRY)) {
+        if (!Secp256k1.isOnCurve(signatureCommitmentX, signatureCommitmentY)) {
             return false;
         }
 
@@ -173,7 +172,7 @@ library FROST {
         }
 
         (uint256 memPtr, uint256 challenge) =
-            computeChallenge(publicKeyX, publicKeyY, signatureRX, signatureRY, messageHash);
+            computeChallenge(publicKeyX, publicKeyY, signatureCommitmentX, signatureCommitmentY, messageHash);
 
         // `challenge` is always in `[1, Secp256k1.N)` and valid non-zero scalar because:
         // 1. `FROST.computeChallenge(...)` returns `challenge < Secp256k1.N`
@@ -184,6 +183,8 @@ library FROST {
             return false;
         }
 
-        return Schnorr.verifySignature(memPtr, publicKeyX, publicKeyY, signatureRX, signatureRY, signatureZ, challenge);
+        return Schnorr.verifySignature(
+            memPtr, publicKeyX, publicKeyY, signatureCommitmentX, signatureCommitmentY, signatureZ, challenge
+        );
     }
 }

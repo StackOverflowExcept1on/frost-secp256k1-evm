@@ -1,7 +1,7 @@
 // SPDX-License-Identifier: MIT
 pragma solidity ^0.8.30;
 
-import {Test, Vm, console} from "forge-std/Test.sol";
+import {Test, Vm} from "forge-std/Test.sol";
 import {SigningKey, FROSTOffchain} from "src/FROSTOffchain.sol";
 import {FROSTCounter} from "./FROSTCounter.sol";
 
@@ -31,8 +31,9 @@ contract FROSTCounterTest is Test {
         uint256 newNumber = 42;
         bytes32 messageHash =
             keccak256(abi.encodePacked(block.chainid, uint256(uint160(address(frostCounter))), nonce, newNumber));
-        (uint256 signatureRX, uint256 signatureRY, uint256 signatureZ) = signingKey.createSignature(messageHash);
-        frostCounter.setNumber(newNumber, signatureRX, signatureRY, signatureZ);
+        (uint256 signatureCommitmentX, uint256 signatureCommitmentY, uint256 signatureZ) =
+            signingKey.createSignature(messageHash);
+        frostCounter.setNumber(newNumber, signatureCommitmentX, signatureCommitmentY, signatureZ);
         assertEq(frostCounter.number(), newNumber);
         assertEq(frostCounter.nonce(), 1);
 
@@ -40,8 +41,8 @@ contract FROSTCounterTest is Test {
         newNumber = 43;
         messageHash =
             keccak256(abi.encodePacked(block.chainid, uint256(uint160(address(frostCounter))), nonce, newNumber));
-        (signatureRX, signatureRY, signatureZ) = signingKey.createSignature(messageHash);
-        frostCounter.setNumber(newNumber, signatureRX, signatureRY, signatureZ);
+        (signatureCommitmentX, signatureCommitmentY, signatureZ) = signingKey.createSignature(messageHash);
+        frostCounter.setNumber(newNumber, signatureCommitmentX, signatureCommitmentY, signatureZ);
         assertEq(frostCounter.number(), newNumber);
         assertEq(frostCounter.nonce(), 2);
     }

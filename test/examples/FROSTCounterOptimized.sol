@@ -17,7 +17,12 @@ contract FROSTCounterOptimized {
         require(FROST.isValidPublicKey(PUBLIC_KEY_X, PUBLIC_KEY_Y));
     }
 
-    function setNumber(uint128 newNumber, uint256 signatureRX, uint256 signatureRY, uint256 signatureZ) public {
+    function setNumber(
+        uint128 newNumber,
+        uint256 signatureCommitmentX,
+        uint256 signatureCommitmentY,
+        uint256 signatureZ
+    ) public {
         uint256 memPtr = Memory.allocate(0x80);
         Memory.writeWord(memPtr, 0x00, block.chainid);
         Memory.writeWord(memPtr, 0x20, uint256(uint160(address(this))));
@@ -30,7 +35,11 @@ contract FROSTCounterOptimized {
         bytes32 messageHash = bytes32(Hashes.efficientKeccak256(memPtr, 0x00, 0x80));
 
         // NOTE: `FROST.isValidPublicKey(...)` is checked at compile time
-        require(FROST.verifySignature(PUBLIC_KEY_X, PUBLIC_KEY_Y, signatureRX, signatureRY, signatureZ, messageHash));
+        require(
+            FROST.verifySignature(
+                PUBLIC_KEY_X, PUBLIC_KEY_Y, signatureCommitmentX, signatureCommitmentY, signatureZ, messageHash
+            )
+        );
 
         number = newNumber;
     }

@@ -1,7 +1,7 @@
 // SPDX-License-Identifier: MIT
 pragma solidity ^0.8.30;
 
-import {Test, console} from "forge-std/Test.sol";
+import {Test} from "forge-std/Test.sol";
 import {Secp256k1} from "src/utils/cryptography/Secp256k1.sol";
 
 contract Secp256k1Test is Test {

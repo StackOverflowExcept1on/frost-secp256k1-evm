@@ -17,17 +17,28 @@ contract FROSTCounter {
         publicKeyY = _publicKeyY;
     }
 
-    function setNumber(uint256 newNumber, uint256 signatureRX, uint256 signatureRY, uint256 signatureZ) public {
+    function setNumber(
+        uint256 newNumber,
+        uint256 signatureCommitmentX,
+        uint256 signatureCommitmentY,
+        uint256 signatureZ
+    ) public {
+        /// forge-lint: disable-start(asm-keccak256)
         bytes32 messageHash =
             keccak256(abi.encodePacked(block.chainid, uint256(uint160(address(this))), nonce, newNumber));
+        /// forge-lint: disable-end(asm-keccak256)
         nonce++;
         // NOTE: `require(FROST.isValidPublicKey(...))` is checked in constructor
-        require(FROST.verifySignature(publicKeyX, publicKeyY, signatureRX, signatureRY, signatureZ, messageHash));
+        require(
+            FROST.verifySignature(
+                publicKeyX, publicKeyY, signatureCommitmentX, signatureCommitmentY, signatureZ, messageHash
+            )
+        );
         number = newNumber;
     }
 
-    function increment(uint256 signatureRX, uint256 signatureRY, uint256 signatureZ) public {
+    function increment(uint256 signatureCommitmentX, uint256 signatureCommitmentY, uint256 signatureZ) public {
         uint256 newNumber = number + 1;
-        setNumber(newNumber, signatureRX, signatureRY, signatureZ);
+        setNumber(newNumber, signatureCommitmentX, signatureCommitmentY, signatureZ);
     }
 }

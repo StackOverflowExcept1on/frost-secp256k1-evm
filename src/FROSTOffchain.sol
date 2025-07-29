@@ -15,6 +15,7 @@ type SigningKey is uint256;
  * @dev Library for creating `FROST-secp256k1-KECCAK256` signatures.
  */
 library FROSTOffchain {
+    /// forge-lint: disable-next-item(screaming-snake-case-const)
     /**
      * @dev Cheat code address, 0x7109709ECfa91a80626fF3989D68f67F5b1DD12D:
      *      - https://github.com/foundry-rs/forge-std/blob/master/src/Base.sol
@@ -55,13 +56,13 @@ library FROSTOffchain {
      * @dev Creates `FROST-secp256k1-KECCAK256` signature.
      * @param signingKey Signing key.
      * @param messageHash Message hash.
-     * @return signatureRX Signature R x.
-     * @return signatureRY Signature R y.
+     * @return signatureCommitmentX Signature commitment R x.
+     * @return signatureCommitmentY Signature commitment R y.
      * @return signatureZ Signature Z.
      */
     function createSignature(SigningKey signingKey, bytes32 messageHash)
         internal
-        returns (uint256 signatureRX, uint256 signatureRY, uint256 signatureZ)
+        returns (uint256 signatureCommitmentX, uint256 signatureCommitmentY, uint256 signatureZ)
     {
         // https://github.com/ZcashFoundation/frost/blob/frost-secp256k1/v2.1.0/frost-core/src/signing_key.rs#L50
 
