@@ -4,7 +4,7 @@ version = "0.1.0"
 edition = "2024"
 
 [dependencies]
-frost-secp256k1-evm = "2.1"
+frost-secp256k1-evm = "2.2"
 k256 = "0.13"
 rand = "0.8"
 rand_chacha = "0.3.1"
