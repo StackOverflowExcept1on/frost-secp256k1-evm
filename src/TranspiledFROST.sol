@@ -17,19 +17,18 @@ library TranspiledFROST {
             function fun_isValidPublicKey(var_publicKeyX, var_publicKeyY) -> var {
                 let expr := lt(var_publicKeyX, not(0x014551231950b75fc4402da1732fc9bebe))
                 if expr {
-                    expr :=
-                        eq(
-                            mulmod(var_publicKeyY, var_publicKeyY, not(0x01000003d0)),
-                            addmod(
-                                mulmod(
-                                    var_publicKeyX,
-                                    mulmod(var_publicKeyX, var_publicKeyX, not(0x01000003d0)),
-                                    not(0x01000003d0)
-                                ),
-                                0x07,
+                    expr := eq(
+                        mulmod(var_publicKeyY, var_publicKeyY, not(0x01000003d0)),
+                        addmod(
+                            mulmod(
+                                var_publicKeyX,
+                                mulmod(var_publicKeyX, var_publicKeyX, not(0x01000003d0)),
                                 not(0x01000003d0)
-                            )
+                            ),
+                            0x07,
+                            not(0x01000003d0)
                         )
+                    )
                 }
                 var := expr
             }
@@ -100,7 +99,9 @@ library TranspiledFROST {
                 ret := 270
                 let var_memPtr := mload(0x40)
                 let usr$newFreePtr := add(var_memPtr, 288)
-                if or(gt(usr$newFreePtr, 0xFFFFFFFFFFFFFFFF), lt(usr$newFreePtr, var_memPtr)) { revert(0, 0) }
+                if or(gt(usr$newFreePtr, 0xFFFFFFFFFFFFFFFF), lt(usr$newFreePtr, var_memPtr)) {
+                    revert(0, 0)
+                }
                 mstore(0x40, usr$newFreePtr)
                 calldatacopy(var_memPtr, calldatasize(), 0x88)
                 mstore8(add(var_memPtr, 0x88), add(and(var_signatureCommitmentY, 0x01), 0x02))
@@ -153,10 +154,14 @@ library TranspiledFROST {
                 mstore(0x20, var_signatureCommitmentY)
                 var := eq(var_recovered, and(keccak256(0, 0x40), sub(shl(160, 1), 1)))
             }
-            isValidSignature :=
-                fun_verifySignature(
-                    publicKeyX, publicKeyY, signatureCommitmentX, signatureCommitmentY, signatureZ, messageHash
-                )
+            isValidSignature := fun_verifySignature(
+                publicKeyX,
+                publicKeyY,
+                signatureCommitmentX,
+                signatureCommitmentY,
+                signatureZ,
+                messageHash
+            )
         }
     }
 }

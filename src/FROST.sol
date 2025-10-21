@@ -33,7 +33,8 @@ library FROST {
     uint256 internal constant INPUT_HASH_SIZE = 32;
     uint256 internal constant RESERVED_BYTE_SIZE = 1;
 
-    uint256 internal constant OUTPUT_HASH_SIZE = INPUT_HASH_SIZE + RESERVED_BYTE_SIZE + DOMAIN_SIZE + DOMAIN_LENGTH_SIZE;
+    uint256 internal constant OUTPUT_HASH_SIZE = INPUT_HASH_SIZE + RESERVED_BYTE_SIZE + DOMAIN_SIZE
+        + DOMAIN_LENGTH_SIZE;
 
     // "\x00\x30" - len_in_bytes_u16
     // "\x00" - zero byte
