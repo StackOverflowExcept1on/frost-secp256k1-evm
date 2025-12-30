@@ -46,7 +46,17 @@ forge install StackOverflowExcept1on/frost-secp256k1-evm
 frost-secp256k1-evm
 ├─ FROST - "Library for verifying `FROST-secp256k1-KECCAK256` signatures"
 ├─ FROSTOffchain - "Library for creating `FROST-secp256k1-KECCAK256` signatures"
-└─ TranspiledFROST - "Transpiled library for verifying `FROST-secp256k1-KECCAK256` signatures"
+├─ TranspiledFROST - "Transpiled library for verifying `FROST-secp256k1-KECCAK256` signatures"
+└─ utils
+   ├─ cryptography
+   │  ├─ ChaChaRngOffchain - "Library for interaction with pseudo-random number generator"
+   │  ├─ ECDSA - "Library for low-level ECDSA recovery"
+   │  ├─ Hashes - "Library for low-level interaction with standard hash functions"
+   │  ├─ ModExp - "Library for low-level modular exponentiation"
+   │  ├─ Schnorr - "Library for verifying Schnorr's signatures"
+   │  ├─ Secp256k1 - "Library for interaction with secp256k1 elliptic curve"
+   │  └─ Secp256k1Arithmetic - "Library for interaction with secp256k1 elliptic curve arithmetic"
+   └─ Memory - "Library for low-level memory interaction"
 ```
 
 ### FROST
