@@ -12,7 +12,11 @@ contract HashesTest is Test {
         assertEq(Hashes.efficientKeccak256(memPtr, 0x00, 32), uint256(keccak256(abi.encodePacked(uint256(42)))));
     }
 
-    function test_efficientKeccak256WithoutMemory() public pure {
+    function test_efficientKeccak256WithoutMemory1() public pure {
+        assertEq(Hashes.efficientKeccak256(41), uint256(keccak256(abi.encodePacked(uint256(41)))));
+    }
+
+    function test_efficientKeccak256WithoutMemory2() public pure {
         assertEq(Hashes.efficientKeccak256(41, 42), uint256(keccak256(abi.encodePacked(uint256(41), uint256(42)))));
     }
 }

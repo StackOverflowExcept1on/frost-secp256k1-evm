@@ -20,6 +20,21 @@ library Hashes {
     }
 
     /**
+     * @dev Implementation of `keccak256(abi.encode(a))` that doesn't allocate or expand memory.
+     * @param a Value to hash.
+     * @return value Hash of value.
+     */
+    function efficientKeccak256(uint256 a) internal pure returns (uint256 value) {
+        // https://github.com/OpenZeppelin/openzeppelin-contracts/blob/v5.2.0/contracts/utils/cryptography/Hashes.sol
+        assembly ("memory-safe") {
+            // https://evm.codes/#52
+            mstore(0x00, a)
+            // https://evm.codes/#20
+            value := keccak256(0x00, 0x20)
+        }
+    }
+
+    /**
      * @dev Implementation of `keccak256(abi.encode(a, b))` that doesn't allocate or expand memory.
      * @param a First value to hash.
      * @param b Second value to hash.
