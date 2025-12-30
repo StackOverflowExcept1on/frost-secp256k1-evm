@@ -331,4 +331,43 @@ library Secp256k1Arithmetic {
 
         return (resultX, resultY, resultZ);
     }
+
+    /**
+     * @dev Returns product of affine point `(x1, y1)` and scalar `scalar`
+     *      as projective point.
+     * @param x1 Affine point x1.
+     * @param y1 Affine point y1.
+     * @param scalar Scalar.
+     * @return x2 Projective point x2.
+     * @return y2 Projective point y2.
+     * @return z2 Projective point z2.
+     */
+    function mulAffinePointAsProjective(uint256 x1, uint256 y1, uint256 scalar)
+        internal
+        pure
+        returns (uint256, uint256, uint256)
+    {
+        (uint256 x1Projective, uint256 y1Projective, uint256 z1Projective) = convertAffinePointToProjectivePoint(x1, y1);
+        return mulProjectivePoint(x1Projective, y1Projective, z1Projective, scalar);
+    }
+
+    /**
+     * @dev Returns product of affine point `(x1, y1)` and scalar `scalar`
+     *      as affine point.
+     * @param memPtr Memory pointer for writing 192 bytes of input data.
+     * @param x1 Affine point x1.
+     * @param y1 Affine point y1.
+     * @param scalar Scalar.
+     * @return x2 Affine point x2.
+     * @return y2 Affine point y2.
+     */
+    function mulAffinePoint(uint256 memPtr, uint256 x1, uint256 y1, uint256 scalar)
+        internal
+        view
+        returns (uint256, uint256)
+    {
+        (uint256 x2Projective, uint256 y2Projective, uint256 z2Projective) = mulAffinePointAsProjective(x1, y1, scalar);
+        (uint256 x2, uint256 y2) = convertProjectivePointToAffinePoint(memPtr, x2Projective, y2Projective, z2Projective);
+        return (x2, y2);
+    }
 }
