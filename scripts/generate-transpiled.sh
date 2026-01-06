@@ -1,7 +1,7 @@
 #!/usr/bin/env bash
 cat <<EOF > src/Counter.sol
 // SPDX-License-Identifier: MIT
-pragma solidity ^0.8.30;
+pragma solidity ^0.8.33;
 
 import {FROST} from "./FROST.sol";
 
@@ -24,7 +24,7 @@ FUNC_IS_VALID_PUBLIC_KEY=$(grep -Pzo '.*function\s+fun_isValidPublicKey\([^\)]*\
 
 cat <<EOF > src/Counter.sol
 // SPDX-License-Identifier: MIT
-pragma solidity ^0.8.30;
+pragma solidity ^0.8.33;
 
 import {FROST} from "./FROST.sol";
 
@@ -49,7 +49,7 @@ rm src/Counter.sol
 
 cat <<EOF > src/TranspiledFROST.sol
 // SPDX-License-Identifier: MIT
-pragma solidity ^0.8.30;
+pragma solidity ^0.8.33;
 
 /**
  * @dev Transpiled library for verifying \`FROST-secp256k1-KECCAK256\` signatures.

@@ -1,5 +1,5 @@
 // SPDX-License-Identifier: MIT
-pragma solidity ^0.8.30;
+pragma solidity ^0.8.33;
 
 import {Test} from "forge-std/Test.sol";
 import {Hashes} from "src/utils/cryptography/Hashes.sol";

@@ -1,5 +1,5 @@
 // SPDX-License-Identifier: MIT
-pragma solidity ^0.8.30;
+pragma solidity ^0.8.33;
 
 import {Hashes} from "./utils/cryptography/Hashes.sol";
 import {Schnorr} from "./utils/cryptography/Schnorr.sol";
@@ -75,9 +75,9 @@ library FROST {
         uint256 signatureCommitmentY,
         bytes32 messageHash
     ) internal pure returns (uint256, uint256) {
-        // https://github.com/ZcashFoundation/frost/blob/frost-secp256k1/v2.1.0/frost-core/src/lib.rs#L118
-        // https://github.com/ZcashFoundation/frost/blob/frost-secp256k1/v2.1.0/frost-secp256k1/src/lib.rs#L196
-        // https://github.com/ZcashFoundation/frost/blob/frost-secp256k1/v2.1.0/frost-secp256k1/src/lib.rs#L161
+        // https://github.com/ZcashFoundation/frost/blob/frost-secp256k1/v2.2.0/frost-core/src/lib.rs#L118
+        // https://github.com/ZcashFoundation/frost/blob/frost-secp256k1/v2.2.0/frost-secp256k1/src/lib.rs#L196
+        // https://github.com/ZcashFoundation/frost/blob/frost-secp256k1/v2.2.0/frost-secp256k1/src/lib.rs#L161
 
         uint256 publicKeyYCompressed = Secp256k1.yCompressed(publicKeyY);
         uint256 signatureCommitmentYCompressed = Secp256k1.yCompressed(signatureCommitmentY);
@@ -152,9 +152,9 @@ library FROST {
         uint256 signatureZ,
         bytes32 messageHash
     ) internal view returns (bool) {
-        // https://github.com/ZcashFoundation/frost/blob/frost-secp256k1/v2.1.0/frost-core/src/verifying_key.rs#L77
-        // https://github.com/ZcashFoundation/frost/blob/frost-secp256k1/v2.1.0/frost-core/src/traits.rs#L252
-        // https://github.com/ZcashFoundation/frost/blob/frost-secp256k1/v2.1.0/frost-core/src/verifying_key.rs#L56
+        // https://github.com/ZcashFoundation/frost/blob/frost-secp256k1/v2.2.0/frost-core/src/verifying_key.rs#L77
+        // https://github.com/ZcashFoundation/frost/blob/frost-secp256k1/v2.2.0/frost-core/src/traits.rs#L252
+        // https://github.com/ZcashFoundation/frost/blob/frost-secp256k1/v2.2.0/frost-core/src/verifying_key.rs#L56
 
         if (!Secp256k1.isOnCurve(signatureCommitmentX, signatureCommitmentY)) {
             return false;

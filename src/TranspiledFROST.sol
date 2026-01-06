@@ -1,5 +1,5 @@
 // SPDX-License-Identifier: MIT
-pragma solidity ^0.8.30;
+pragma solidity ^0.8.33;
 
 /**
  * @dev Transpiled library for verifying `FROST-secp256k1-KECCAK256` signatures.

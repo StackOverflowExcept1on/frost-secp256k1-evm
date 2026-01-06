@@ -1,5 +1,5 @@
 // SPDX-License-Identifier: MIT
-pragma solidity ^0.8.30;
+pragma solidity ^0.8.33;
 
 import {ModExp} from "./ModExp.sol";
 import {Secp256k1} from "./Secp256k1.sol";
@@ -33,7 +33,7 @@ library Secp256k1Arithmetic {
     /**
      * @dev Auxiliary constant $\frac{p + 1}{4}$, used during point decompression.
      * @dev Square root of an secp256k1 field element `x` can be computed via `modexp(x, SQRT_EXPONENT, P)`:
-     *      - https://github.com/ethereum/eth-keys/blob/v0.6.1/eth_keys/backends/native/ecdsa.py#L163
+     *      - https://github.com/ethereum/eth-keys/blob/v0.7.0/eth_keys/backends/native/ecdsa.py#L164
      *      - https://github.com/RustCrypto/elliptic-curves/blob/k256/v0.13.4/k256/src/arithmetic/field.rs#L206
      */
     uint256 internal constant SQRT_EXPONENT = (P + 1) / 4;
@@ -148,7 +148,7 @@ library Secp256k1Arithmetic {
 
         // https://github.com/RustCrypto/elliptic-curves/blob/k256/v0.13.4/k256/src/arithmetic/affine.rs#L187
         uint256 alpha = addmod(mulmod(x, mulmod(x, x, P), P), B, P);
-        // https://github.com/ethereum/eth-keys/blob/v0.6.1/eth_keys/backends/native/ecdsa.py#L164
+        // https://github.com/ethereum/eth-keys/blob/v0.7.0/eth_keys/backends/native/ecdsa.py#L165
         uint256 beta = ModExp.modexp(memPtr, alpha, SQRT_EXPONENT, P);
 
         uint256 y;

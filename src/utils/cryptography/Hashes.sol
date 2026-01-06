@@ -1,5 +1,5 @@
 // SPDX-License-Identifier: MIT
-pragma solidity ^0.8.30;
+pragma solidity ^0.8.33;
 
 /**
  * @dev Library for low-level interaction with standard hash functions.
@@ -25,7 +25,7 @@ library Hashes {
      * @return value Hash of value.
      */
     function efficientKeccak256(uint256 a) internal pure returns (uint256 value) {
-        // https://github.com/OpenZeppelin/openzeppelin-contracts/blob/v5.2.0/contracts/utils/cryptography/Hashes.sol
+        // https://github.com/OpenZeppelin/openzeppelin-contracts/blob/v5.5.0/contracts/utils/cryptography/Hashes.sol
         assembly ("memory-safe") {
             // https://evm.codes/#52
             mstore(0x00, a)
@@ -41,7 +41,7 @@ library Hashes {
      * @return value Hash of first and second values.
      */
     function efficientKeccak256(uint256 a, uint256 b) internal pure returns (uint256 value) {
-        // https://github.com/OpenZeppelin/openzeppelin-contracts/blob/v5.2.0/contracts/utils/cryptography/Hashes.sol
+        // https://github.com/OpenZeppelin/openzeppelin-contracts/blob/v5.5.0/contracts/utils/cryptography/Hashes.sol
         assembly ("memory-safe") {
             // https://evm.codes/#52
             mstore(0x00, a)

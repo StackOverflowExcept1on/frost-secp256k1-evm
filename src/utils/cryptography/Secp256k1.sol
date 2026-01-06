@@ -1,5 +1,5 @@
 // SPDX-License-Identifier: MIT
-pragma solidity ^0.8.30;
+pragma solidity ^0.8.33;
 
 import {Hashes} from "./Hashes.sol";
 
@@ -9,7 +9,7 @@ import {Hashes} from "./Hashes.sol";
  *      where `a = 0` and `b = 7`.
  * @dev Curve parameters taken from:
  *      - https://en.bitcoin.it/wiki/Secp256k1
- *      - https://github.com/ethereum/go-ethereum/blob/v1.14.12/crypto/secp256k1/curve.go#L282
+ *      - https://github.com/ethereum/go-ethereum/blob/v1.16.7/crypto/secp256k1/curve.go#L263
  */
 library Secp256k1 {
     /**
@@ -44,7 +44,7 @@ library Secp256k1 {
      * @return isOnCurve `true` if public key is on curve, `false` otherwise.
      */
     function isOnCurve(uint256 x, uint256 y) internal pure returns (bool) {
-        // https://github.com/ethereum/go-ethereum/blob/v1.14.12/crypto/secp256k1/curve.go#L94
+        // https://github.com/ethereum/go-ethereum/blob/v1.16.7/crypto/secp256k1/curve.go#L75
         return mulmod(y, y, P) == addmod(mulmod(x, mulmod(x, x, P), P), B, P);
     }
 
@@ -81,7 +81,7 @@ library Secp256k1 {
      * @return ethereumYParity `27` if `y` is even, `28` if `y` is odd.
      */
     function yParityEthereum(uint256 y) internal pure returns (uint256) {
-        // https://github.com/ethereum/go-ethereum/blob/v1.14.12/core/vm/contracts.go#L252
+        // https://github.com/ethereum/go-ethereum/blob/v1.16.7/core/vm/contracts.go#L294
         uint256 ethereumYParity;
         unchecked {
             ethereumYParity = yParity(y) + 27;
@@ -95,7 +95,8 @@ library Secp256k1 {
      * @return compressedY Compressed `y`, `2` if `y` is even, `3` if `y` is odd.
      */
     function yCompressed(uint256 y) internal pure returns (uint256) {
-        // https://github.com/ethereum/go-ethereum/blob/v1.14.12/crypto/secp256k1/libsecp256k1/src/eckey_impl.h#L45
+        // https://github.com/ethereum/go-ethereum/blob/v1.16.7/crypto/secp256k1/libsecp256k1/src/eckey_impl.h#L46
+        // https://github.com/ethereum/go-ethereum/blob/v1.16.7/crypto/secp256k1/libsecp256k1/include/secp256k1.h#L215-L217
         uint256 compressedY;
         unchecked {
             compressedY = yParity(y) + 2;
@@ -110,7 +111,7 @@ library Secp256k1 {
      * @return addr Ethereum address.
      */
     function toAddress(uint256 x, uint256 y) internal pure returns (uint256 addr) {
-        // https://github.com/ethereum/go-ethereum/blob/v1.14.12/core/vm/contracts.go#L271
+        // https://github.com/ethereum/go-ethereum/blob/v1.16.7/core/vm/contracts.go#L313
         uint256 fullHash = Hashes.efficientKeccak256(x, y);
         assembly ("memory-safe") {
             // addr = fullHash & ((1 << 160) - 1)

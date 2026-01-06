@@ -1,5 +1,5 @@
 // SPDX-License-Identifier: MIT
-pragma solidity ^0.8.30;
+pragma solidity ^0.8.33;
 
 import {Vm} from "forge-std/Vm.sol";
 import {Secp256k1} from "./Secp256k1.sol";
@@ -22,7 +22,7 @@ library ChaChaRngOffchain {
      * @return scalar valid `scalar`.
      */
     function randomScalar() internal view returns (uint256) {
-        // https://github.com/ZcashFoundation/frost/blob/frost-secp256k1/v2.1.0/frost-core/src/traits.rs#L55
+        // https://github.com/ZcashFoundation/frost/blob/frost-secp256k1/v2.2.0/frost-core/src/traits.rs#L55
 
         while (true) {
             uint256 scalar = uint256(bytes32(vm.randomBytes(32)));
@@ -40,7 +40,7 @@ library ChaChaRngOffchain {
      * @return scalar valid non-zero `scalar`.
      */
     function randomNonZeroScalar() internal view returns (uint256) {
-        // https://github.com/ZcashFoundation/frost/blob/frost-secp256k1/v2.1.0/frost-core/src/lib.rs#L140
+        // https://github.com/ZcashFoundation/frost/blob/frost-secp256k1/v2.2.0/frost-core/src/lib.rs#L140
 
         while (true) {
             uint256 scalar = randomScalar();
