@@ -1,6 +1,7 @@
 // SPDX-License-Identifier: MIT
 pragma solidity ^0.8.33;
 
+import {Memory} from "../Memory.sol";
 import {ModExp} from "./ModExp.sol";
 import {Secp256k1} from "./Secp256k1.sol";
 
@@ -128,6 +129,54 @@ library Secp256k1Arithmetic {
         uint256 y2 = mulmod(y1, z1Inv, P);
 
         return (x2, y2);
+    }
+
+    /**
+     * @dev Compresses affine point `(x, y)` into 33 bytes `(yCompressed, x)`.
+     * @param memPtr Memory pointer for writing 96 bytes of output data.
+     * @param x Affine point x.
+     * @param y Affine point y.
+     * @return compressedPoint Compressed affine point.
+     */
+    function compressAffinePoint(uint256 memPtr, uint256 x, uint256 y)
+        internal
+        pure
+        returns (bytes memory compressedPoint)
+    {
+        uint256 yCompressed = Secp256k1.yCompressed(y);
+        Memory.writeWord(memPtr, 0x00, 33);
+        Memory.writeByte(memPtr, 0x20, yCompressed);
+        Memory.writeWord(memPtr, 0x21, x);
+        assembly ("memory-safe") {
+            compressedPoint := memPtr
+        }
+    }
+
+    /**
+     * @dev Decompresses compressed affine point `compressedPoint` to affine point `(x, y)`.
+     * @dev Reverts if `yCompressed` is not `2` or `3`, or if decompressed point is not on curve.
+     * @param memPtr Memory pointer for writing 192 bytes of input data.
+     * @param compressedPoint Affine point (compressed).
+     * @return x Affine point x.
+     * @return y Affine point y.
+     */
+    function decompressToAffinePoint(uint256 memPtr, bytes memory compressedPoint)
+        internal
+        view
+        returns (uint256, uint256)
+    {
+        uint8 compressedY;
+        uint256 x;
+        uint256 y;
+
+        assembly ("memory-safe") {
+            compressedY := byte(0, mload(add(compressedPoint, 0x20)))
+            x := mload(add(compressedPoint, 0x21))
+        }
+
+        (, y) = Secp256k1Arithmetic.decompressToAffinePoint(memPtr, x, compressedY);
+
+        return (x, y);
     }
 
     /**
