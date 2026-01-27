@@ -2,9 +2,9 @@
 pragma solidity ^0.8.33;
 
 import {Test} from "forge-std/Test.sol";
+import {FROST} from "src/FROST.sol";
 import {Schnorr} from "src/utils/cryptography/Schnorr.sol";
 import {Secp256k1} from "src/utils/cryptography/Secp256k1.sol";
-import {FROST} from "src/FROST.sol";
 
 contract SchnorrTest is Test {
     function test_IsValidPublicKey() public pure {

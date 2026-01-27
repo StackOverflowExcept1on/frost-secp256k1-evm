@@ -1,8 +1,8 @@
 // SPDX-License-Identifier: MIT
 pragma solidity ^0.8.33;
 
-import {Vm} from "forge-std/Vm.sol";
 import {Secp256k1} from "./Secp256k1.sol";
+import {Vm} from "forge-std/Vm.sol";
 
 /**
  * @dev Library for interaction with pseudo-random number generator.

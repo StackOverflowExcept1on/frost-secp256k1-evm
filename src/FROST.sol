@@ -1,10 +1,10 @@
 // SPDX-License-Identifier: MIT
 pragma solidity ^0.8.33;
 
+import {Memory} from "./utils/Memory.sol";
 import {Hashes} from "./utils/cryptography/Hashes.sol";
 import {Schnorr} from "./utils/cryptography/Schnorr.sol";
 import {Secp256k1} from "./utils/cryptography/Secp256k1.sol";
-import {Memory} from "./utils/Memory.sol";
 
 /**
  * @dev Library for verifying `FROST-secp256k1-KECCAK256` signatures.

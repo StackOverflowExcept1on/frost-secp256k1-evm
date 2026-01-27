@@ -2,10 +2,10 @@
 pragma solidity ^0.8.33;
 
 import {Test, Vm} from "forge-std/Test.sol";
+import {Memory} from "src/utils/Memory.sol";
 import {ChaChaRngOffchain} from "src/utils/cryptography/ChaChaRngOffchain.sol";
 import {Secp256k1} from "src/utils/cryptography/Secp256k1.sol";
 import {Secp256k1Arithmetic} from "src/utils/cryptography/Secp256k1Arithmetic.sol";
-import {Memory} from "src/utils/Memory.sol";
 
 contract Secp256k1ArithmeticWrapper {
     function decompressToAffinePoint(uint256 memPtr, uint256 x, uint256 yCompressed)

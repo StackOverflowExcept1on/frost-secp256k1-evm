@@ -2,9 +2,9 @@
 pragma solidity ^0.8.33;
 
 import {Test} from "forge-std/Test.sol";
+import {Memory} from "src/utils/Memory.sol";
 import {ECDSA} from "src/utils/cryptography/ECDSA.sol";
 import {Secp256k1} from "src/utils/cryptography/Secp256k1.sol";
-import {Memory} from "src/utils/Memory.sol";
 
 contract ECDSATest is Test {
     function test_Recover() public view {

@@ -1,9 +1,9 @@
 // SPDX-License-Identifier: MIT
 pragma solidity ^0.8.33;
 
-import {Test, Vm} from "forge-std/Test.sol";
-import {SigningKey, FROSTOffchain} from "src/FROSTOffchain.sol";
 import {FROSTWalletOptimized} from "./FROSTWalletOptimized.sol";
+import {Test, Vm} from "forge-std/Test.sol";
+import {FROSTOffchain, SigningKey} from "src/FROSTOffchain.sol";
 
 library FROSTWalletOptimizedTestHelper {
     /// forge-lint: disable-next-item(screaming-snake-case-const)

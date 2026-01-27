@@ -2,8 +2,8 @@
 pragma solidity ^0.8.33;
 
 import {Test} from "forge-std/Test.sol";
-import {ModExp} from "src/utils/cryptography/ModExp.sol";
 import {Memory} from "src/utils/Memory.sol";
+import {ModExp} from "src/utils/cryptography/ModExp.sol";
 
 contract ModExpTest is Test {
     function test_ModExpSimpleMod1024() public view {

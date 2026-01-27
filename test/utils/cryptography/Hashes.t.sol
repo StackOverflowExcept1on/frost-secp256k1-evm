@@ -2,8 +2,8 @@
 pragma solidity ^0.8.33;
 
 import {Test} from "forge-std/Test.sol";
-import {Hashes} from "src/utils/cryptography/Hashes.sol";
 import {Memory} from "src/utils/Memory.sol";
+import {Hashes} from "src/utils/cryptography/Hashes.sol";
 
 contract HashesTest is Test {
     function test_efficientKeccak256WithMemory() public pure {

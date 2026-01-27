@@ -3,7 +3,7 @@ pragma solidity ^0.8.33;
 
 import {Test, Vm} from "forge-std/Test.sol";
 import {FROST} from "src/FROST.sol";
-import {SigningKey, FROSTOffchain} from "src/FROSTOffchain.sol";
+import {FROSTOffchain, SigningKey} from "src/FROSTOffchain.sol";
 
 contract FROSTOffchainTest is Test {
     // let mut rng = rand_chacha::ChaChaRng::from_seed([0x42; 32]);

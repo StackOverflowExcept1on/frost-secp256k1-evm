@@ -1,10 +1,10 @@
 // SPDX-License-Identifier: MIT
 pragma solidity ^0.8.33;
 
-import {Vm} from "forge-std/Vm.sol";
+import {FROST} from "./FROST.sol";
 import {ChaChaRngOffchain} from "./utils/cryptography/ChaChaRngOffchain.sol";
 import {Secp256k1} from "./utils/cryptography/Secp256k1.sol";
-import {FROST} from "./FROST.sol";
+import {Vm} from "forge-std/Vm.sol";
 
 /**
  * @dev Signing key for Schnorr signature on `FROST-secp256k1-KECCAK256`.

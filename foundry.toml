@@ -9,3 +9,6 @@ via_ir = true
 bytecode_hash = "none"
 cbor_metadata = false
 revert_strings = "strip"
+
+[fmt]
+sort_imports = true
