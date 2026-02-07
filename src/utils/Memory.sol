@@ -74,6 +74,19 @@ library Memory {
     }
 
     /**
+     * @dev Reads word from memory at given offset.
+     * @param memPtr Pointer to memory.
+     * @param offset Offset in memory.
+     * @return word Word from memory.
+     */
+    function readWordAsBytes32(uint256 memPtr, uint256 offset) internal pure returns (bytes32 word) {
+        // https://evm.codes/#51
+        assembly ("memory-safe") {
+            word := mload(add(memPtr, offset))
+        }
+    }
+
+    /**
      * @dev Writes word to memory at given offset.
      * @param memPtr Pointer to memory.
      * @param offset Offset in memory.
@@ -87,12 +100,38 @@ library Memory {
     }
 
     /**
+     * @dev Writes word to memory at given offset.
+     * @param memPtr Pointer to memory.
+     * @param offset Offset in memory.
+     * @param value Word to write.
+     */
+    function writeWordAsBytes32(uint256 memPtr, uint256 offset, bytes32 value) internal pure {
+        // https://evm.codes/#52
+        assembly ("memory-safe") {
+            mstore(add(memPtr, offset), value)
+        }
+    }
+
+    /**
      * @dev Writes byte to memory at given offset.
      * @param memPtr Pointer to memory.
      * @param offset Offset in memory.
      * @param value Byte to write.
      */
     function writeByte(uint256 memPtr, uint256 offset, uint256 value) internal pure {
+        // https://evm.codes/#53
+        assembly ("memory-safe") {
+            mstore8(add(memPtr, offset), value)
+        }
+    }
+
+    /**
+     * @dev Writes byte to memory at given offset.
+     * @param memPtr Pointer to memory.
+     * @param offset Offset in memory.
+     * @param value Byte to write.
+     */
+    function writeByteAsBytes32(uint256 memPtr, uint256 offset, bytes32 value) internal pure {
         // https://evm.codes/#53
         assembly ("memory-safe") {
             mstore8(add(memPtr, offset), value)
