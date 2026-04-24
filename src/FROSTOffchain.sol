@@ -1,5 +1,5 @@
 // SPDX-License-Identifier: MIT
-pragma solidity ^0.8.33;
+pragma solidity ^0.8.34;
 
 import {FROST} from "./FROST.sol";
 import {ChaChaRngOffchain} from "./utils/cryptography/ChaChaRngOffchain.sol";
@@ -64,7 +64,7 @@ library FROSTOffchain {
         internal
         returns (uint256 signatureCommitmentX, uint256 signatureCommitmentY, uint256 signatureZ)
     {
-        // https://github.com/ZcashFoundation/frost/blob/frost-secp256k1/v2.2.0/frost-core/src/signing_key.rs#L50
+        // https://github.com/ZcashFoundation/frost/blob/frost-secp256k1/v3.0.0/frost-core/src/signing_key.rs#L51
 
         uint256 rawSigningKey = signingKey.asScalar();
         Vm.Wallet memory publicKey = vm.createWallet(rawSigningKey);

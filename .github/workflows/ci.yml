@@ -9,9 +9,6 @@ on:
     branches: [ master ]
   workflow_dispatch:
 
-env:
-  FOUNDRY_PROFILE: ci
-
 jobs:
   check:
     name: Foundry project
@@ -26,6 +23,8 @@ jobs:
 
       - name: Install Foundry
         uses: foundry-rs/foundry-toolchain@v1
+        with:
+          version: nightly
 
       - name: Show Forge version
         run: forge --version

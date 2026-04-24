@@ -1,5 +1,5 @@
 // SPDX-License-Identifier: MIT
-pragma solidity ^0.8.33;
+pragma solidity ^0.8.34;
 
 import {ECDSA} from "./ECDSA.sol";
 import {Secp256k1} from "./Secp256k1.sol";
@@ -150,12 +150,12 @@ library Schnorr {
         // https://ethresear.ch/t/you-can-kinda-abuse-ecrecover-to-do-ecmul-in-secp256k1-today/2384
 
         // Schnorr's signature structure:
-        // https://github.com/ZcashFoundation/frost/blob/frost-secp256k1/v2.2.0/frost-core/src/signature.rs#L10
+        // https://github.com/ZcashFoundation/frost/blob/frost-secp256k1/v3.0.0/frost-core/src/signature.rs#L10
         // Schnorr's challenge structure:
-        // https://github.com/ZcashFoundation/frost/blob/frost-secp256k1/v2.2.0/frost-core/src/lib.rs#L68
+        // https://github.com/ZcashFoundation/frost/blob/frost-secp256k1/v3.0.0/frost-core/src/lib.rs#L67
 
         // Schnorr's signature verification formula: $zG - cX = R$:
-        // https://github.com/ZcashFoundation/frost/blob/frost-secp256k1/v2.2.0/frost-core/src/verifying_key.rs#L56
+        // https://github.com/ZcashFoundation/frost/blob/frost-secp256k1/v3.0.0/frost-core/src/verifying_key.rs#L56
         // $zG - cX$ is calculated using `ECDSA.recover(memPtr, e, v, r, s)`.
         // $R$ is calculated using `Secp256k1.toAddress(signatureCommitmentX, signatureCommitmentY)`.
 
