@@ -1,5 +1,5 @@
 // SPDX-License-Identifier: MIT
-pragma solidity ^0.8.34;
+pragma solidity ^0.8.35;
 
 import {Secp256k1} from "./Secp256k1.sol";
 import {Vm} from "forge-std/Vm.sol";

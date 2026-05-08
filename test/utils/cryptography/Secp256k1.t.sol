@@ -1,5 +1,5 @@
 // SPDX-License-Identifier: MIT
-pragma solidity ^0.8.34;
+pragma solidity ^0.8.35;
 
 import {Test} from "forge-std/Test.sol";
 import {Secp256k1} from "src/utils/cryptography/Secp256k1.sol";
