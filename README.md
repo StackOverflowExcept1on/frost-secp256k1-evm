@@ -1,6 +1,6 @@
 # frost-secp256k1-evm &mdash; cheap threshold signature scheme for EVM
 
-[![Build Status](https://github.com/StackOverflowExcept1on/frost-secp256k1-evm/actions/workflows/ci.yml/badge.svg)](https://github.com/StackOverflowExcept1on/frost-secp256k1-evm/actions/workflows/ci.yml)
+[![Build Status](https://github.com/StackOverflowExcept1on/frost-secp256k1-evm/actions/workflows/test.yml/badge.svg)](https://github.com/StackOverflowExcept1on/frost-secp256k1-evm/actions/workflows/test.yml)
 [![Latest Version](https://img.shields.io/crates/v/frost-secp256k1-evm.svg)](https://crates.io/crates/frost-secp256k1-evm)
 
 This is Solidity library that implements [FROST signature](https://github.com/ZcashFoundation/frost) verification for
@@ -38,6 +38,26 @@ Install with [Foundry](https://getfoundry.sh):
 
 ```bash
 forge install StackOverflowExcept1on/frost-secp256k1-evm
+```
+
+```diff
++remappings = [
++    "frost-secp256k1-evm/=lib/frost-secp256k1-evm/src/",
++]
+```
+
+Install with [Soldeer](https://soldeer.xyz):
+
+```bash
+forge soldeer install frost-secp256k1-evm~master \
+  --git https://github.com/StackOverflowExcept1on/frost-secp256k1-evm.git \
+  --branch master
+```
+
+```diff
++remappings = [
++    "frost-secp256k1-evm/=dependencies/frost-secp256k1-evm-master/src/",
++]
 ```
 
 ## Libraries
@@ -156,7 +176,7 @@ pragma solidity ^0.8.35;
 
 import {Test, Vm} from "forge-std/Test.sol";
 import {FROST} from "frost-secp256k1-evm/FROST.sol";
-import {SigningKey, FROSTOffchain} from "frost-secp256k1-evm/FROSTOffchain.sol";
+import {FROSTOffchain, SigningKey} from "frost-secp256k1-evm/FROSTOffchain.sol";
 
 contract MyContractTest is Test {
     using FROSTOffchain for SigningKey;
@@ -208,7 +228,7 @@ Setup:
 ```bash
 git clone https://github.com/StackOverflowExcept1on/frost-secp256k1-evm
 cd frost-secp256k1-evm
-forge install
+forge soldeer install
 ```
 
 ## Safety

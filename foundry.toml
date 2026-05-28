@@ -1,7 +1,8 @@
 [profile.default]
 src = "src"
 out = "out"
-libs = ["lib"]
+libs = ["dependencies"]
+remappings = ["forge-std/=dependencies/forge-std-1.16.1/src/"]
 evm_version = "osaka"
 solc = "0.8.35"
 optimizer = true
@@ -11,5 +12,10 @@ bytecode_hash = "none"
 cbor_metadata = false
 revert_strings = "strip"
 
+[dependencies]
+forge-std = "1.16.1"
+
 [fmt]
 sort_imports = true
+
+# See more config options https://github.com/foundry-rs/foundry/blob/master/crates/config/README.md#all-options

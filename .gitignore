@@ -19,12 +19,12 @@ docs/
 .env.*
 !.env.example
 
-# Remappings
-remappings.txt
-
 # Coverage files
 lcov.info
 coverage/
+
+# Soldeer
+/dependencies
 
 # JetBrains IDEs
 .idea
