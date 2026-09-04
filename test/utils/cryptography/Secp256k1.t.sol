@@ -1,17 +1,19 @@
 // SPDX-License-Identifier: MIT
-pragma solidity ^0.8.35;
+pragma solidity ^0.8.36;
 
 import {Test} from "forge-std/Test.sol";
 import {Secp256k1} from "src/utils/cryptography/Secp256k1.sol";
 
 contract Secp256k1Test is Test {
     function test_IsOnCurve() public pure {
+        // forge-lint: disable-next-item(too-many-digits)
         assertFalse(
             Secp256k1.isOnCurve(
                 0x0000000000000000000000000000000000000000000000000000000000000000,
                 0x8F537EEFDFC1606A0727CD69B4A7333D38ED44E3932A7179EECB4B6FBA9360DC
             )
         );
+        // forge-lint: disable-next-item(too-many-digits)
         assertTrue(
             Secp256k1.isOnCurve(
                 0x0000000000000000000000000000000000000000000000000000000000000001,
@@ -66,7 +68,7 @@ contract Secp256k1Test is Test {
     }
 
     function test_ToAddress() public pure {
-        // public key taken from https://github.com/ethereum/eth-keys/blob/main/README.md#quickstart
+        // public key taken from https://github.com/ApeWorX/eth-keys/blob/main/README.md#quickstart
         assertEq(
             Secp256k1.toAddress(
                 0x1B84C5567B126440995D3ED5AABA0565D71E1834604819FF9C17F5E9D5DD078F,

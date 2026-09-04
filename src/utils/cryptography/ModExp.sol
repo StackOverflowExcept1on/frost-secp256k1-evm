@@ -1,5 +1,5 @@
 // SPDX-License-Identifier: MIT
-pragma solidity ^0.8.35;
+pragma solidity ^0.8.36;
 
 import {Memory} from "../Memory.sol";
 
@@ -32,8 +32,10 @@ library ModExp {
 
         Memory.writeWord(0x00, 0x00, 0x00);
 
-        // https://evm.codes/precompiled#0x05
+        // forge-lint: disable-next-item(inline-assembly)
         assembly ("memory-safe") {
+            // reviewed: Efficiently call pre-compiled with address 0x05.
+            // https://evm.codes/precompiled#0x05
             pop(staticcall(gas(), 0x05, memPtr, 0xc0, 0x00, 0x20))
             result := mload(0x00)
         }

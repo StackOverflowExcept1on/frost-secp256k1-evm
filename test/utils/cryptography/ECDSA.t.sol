@@ -1,5 +1,5 @@
 // SPDX-License-Identifier: MIT
-pragma solidity ^0.8.35;
+pragma solidity ^0.8.36;
 
 import {Test} from "forge-std/Test.sol";
 import {Memory} from "src/utils/Memory.sol";
@@ -8,7 +8,7 @@ import {Secp256k1} from "src/utils/cryptography/Secp256k1.sol";
 
 contract ECDSATest is Test {
     function test_Recover() public view {
-        // signature taken from https://github.com/ethereum/eth-keys/blob/main/README.md#quickstart
+        // signature taken from https://github.com/ApeWorX/eth-keys/blob/main/README.md#quickstart
         uint256 memPtr = Memory.allocate(128);
         uint256 e = uint256(keccak256(abi.encodePacked("a message")));
         uint256 v = 27;

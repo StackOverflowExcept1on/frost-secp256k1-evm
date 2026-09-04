@@ -1,5 +1,5 @@
 // SPDX-License-Identifier: MIT
-pragma solidity ^0.8.35;
+pragma solidity ^0.8.36;
 
 import {Secp256k1} from "./Secp256k1.sol";
 import {Vm} from "forge-std/Vm.sol";
@@ -25,6 +25,8 @@ library ChaChaRngOffchain {
         // https://github.com/ZcashFoundation/frost/blob/frost-secp256k1/v3.0.0/frost-core/src/traits.rs#L57
 
         while (true) {
+            // casting to 'bytes32' is safe because random bytes are guaranteed to be 32 bytes
+            // forge-lint: disable-next-item(calls-loop, unsafe-typecast)
             uint256 scalar = uint256(bytes32(vm.randomBytes(32)));
 
             if (Secp256k1.isValidScalar(scalar)) {
@@ -32,6 +34,7 @@ library ChaChaRngOffchain {
             }
         }
 
+        // forge-lint: disable-next-item(custom-errors, require-revert-in-loop)
         revert();
     }
 
@@ -50,6 +53,7 @@ library ChaChaRngOffchain {
             }
         }
 
+        // forge-lint: disable-next-item(custom-errors)
         revert();
     }
 }

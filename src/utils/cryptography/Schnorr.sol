@@ -1,5 +1,5 @@
 // SPDX-License-Identifier: MIT
-pragma solidity ^0.8.35;
+pragma solidity ^0.8.36;
 
 import {ECDSA} from "./ECDSA.sol";
 import {Secp256k1} from "./Secp256k1.sol";
@@ -39,7 +39,7 @@ library Schnorr {
         //    ```
         //
         //    this script is based on code from eth-keys:
-        //    https://github.com/ethereum/eth-keys/blob/v0.7.0/eth_keys/backends/native/ecdsa.py#L166
+        //    https://github.com/ApeWorX/eth-keys/blob/v0.8.0/eth_keys/backends/native/ecdsa.py#L180
 
         return publicKeyX < Secp256k1.N && Secp256k1.isOnCurve(publicKeyX, publicKeyY);
     }

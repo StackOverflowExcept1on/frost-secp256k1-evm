@@ -1,5 +1,5 @@
 // SPDX-License-Identifier: MIT
-pragma solidity ^0.8.35;
+pragma solidity ^0.8.36;
 
 import {FROST} from "./FROST.sol";
 import {ChaChaRngOffchain} from "./utils/cryptography/ChaChaRngOffchain.sol";
@@ -24,6 +24,7 @@ library FROSTOffchain {
 
     using FROSTOffchain for SigningKey;
 
+    /// forge-lint: disable-next-item(internal-function-used-once)
     /**
      * @dev Generates new signing key.
      * @return signingKey Signing key.
@@ -40,6 +41,7 @@ library FROSTOffchain {
      * @return signingKey Signing key.
      */
     function signingKeyFromScalar(uint256 scalar) internal pure returns (SigningKey) {
+        // forge-lint: disable-next-item(custom-errors)
         require(Secp256k1.isValidNonZeroScalar(scalar));
         return SigningKey.wrap(scalar);
     }

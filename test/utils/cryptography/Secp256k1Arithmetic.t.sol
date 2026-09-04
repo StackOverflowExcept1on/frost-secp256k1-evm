@@ -1,21 +1,12 @@
 // SPDX-License-Identifier: MIT
-pragma solidity ^0.8.35;
+pragma solidity ^0.8.36;
 
 import {Test, Vm} from "forge-std/Test.sol";
 import {Memory} from "src/utils/Memory.sol";
 import {ChaChaRngOffchain} from "src/utils/cryptography/ChaChaRngOffchain.sol";
 import {Secp256k1} from "src/utils/cryptography/Secp256k1.sol";
 import {Secp256k1Arithmetic} from "src/utils/cryptography/Secp256k1Arithmetic.sol";
-
-contract Secp256k1ArithmeticWrapper {
-    function decompressToAffinePoint(uint256 memPtr, uint256 x, uint256 yCompressed)
-        external
-        view
-        returns (uint256, uint256)
-    {
-        return Secp256k1Arithmetic.decompressToAffinePoint(memPtr, x, yCompressed);
-    }
-}
+import {Secp256k1ArithmeticWrapper} from "test/utils/cryptography/Secp256k1ArithmeticWrapper.sol";
 
 contract Secp256k1ArithmeticTest is Test {
     function test_IdentityAffinePoint() public pure {
@@ -120,6 +111,7 @@ contract Secp256k1ArithmeticTest is Test {
         uint256 x = 0; // x = 0 is not on curve
         uint256 yCompressed = 2; // valid yCompressed
         vm.expectRevert();
+        // forge-lint: disable-next-item(unused-return)
         wrapper.decompressToAffinePoint(memPtr, x, yCompressed);
     }
 

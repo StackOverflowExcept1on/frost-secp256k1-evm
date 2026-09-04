@@ -1,8 +1,8 @@
 // SPDX-License-Identifier: MIT
-pragma solidity ^0.8.35;
+pragma solidity ^0.8.36;
 
-import {FROSTVerifier} from "./FROSTVerifier.sol";
 import {Test} from "forge-std/Test.sol";
+import {FROSTVerifier} from "test/examples/FROSTVerifier.sol";
 
 contract FROSTVerifierTest is Test {
     FROSTVerifier frostVerifier;

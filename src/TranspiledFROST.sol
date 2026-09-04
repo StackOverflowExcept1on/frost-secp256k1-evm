@@ -1,5 +1,5 @@
 // SPDX-License-Identifier: MIT
-pragma solidity ^0.8.35;
+pragma solidity ^0.8.36;
 
 /**
  * @dev Transpiled library for verifying `FROST-secp256k1-KECCAK256` signatures.
@@ -13,6 +13,7 @@ library TranspiledFROST {
      * @return _isValidPublicKey `true` if public key is valid, `false` otherwise.
      */
     function isValidPublicKey(uint256 publicKeyX, uint256 publicKeyY) internal pure returns (bool _isValidPublicKey) {
+        // forge-lint: disable-start(inline-assembly, literal-instead-of-constant, too-many-digits)
         assembly ("memory-safe") {
             function fun_isValidPublicKey(var_publicKeyX, var_publicKeyY) -> var {
                 let expr := lt(var_publicKeyX, not(0x014551231950b75fc4402da1732fc9bebe))
@@ -34,8 +35,10 @@ library TranspiledFROST {
             }
             _isValidPublicKey := fun_isValidPublicKey(publicKeyX, publicKeyY)
         }
+        // forge-lint: disable-end(inline-assembly, literal-instead-of-constant, too-many-digits)
     }
 
+    /// forge-lint: disable-next-item(internal-function-used-once)
     /**
      * @dev Verifies `FROST-secp256k1-KECCAK256` signature by formula $zG - cX = R$.
      *      - Public key ($X$) must be checked with `FROST.isValidPublicKey(publicKeyX, publicKeyY)`.
@@ -59,6 +62,7 @@ library TranspiledFROST {
         uint256 signatureZ,
         bytes32 messageHash
     ) internal view returns (bool isValidSignature) {
+        // forge-lint: disable-start(inline-assembly, literal-instead-of-constant, too-many-digits)
         assembly ("memory-safe") {
             function fun_verifySignature(
                 var_publicKeyX,
@@ -163,5 +167,6 @@ library TranspiledFROST {
                 messageHash
             )
         }
+        // forge-lint: disable-end(inline-assembly, literal-instead-of-constant, too-many-digits)
     }
 }

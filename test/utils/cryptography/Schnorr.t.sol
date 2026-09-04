@@ -1,5 +1,5 @@
 // SPDX-License-Identifier: MIT
-pragma solidity ^0.8.35;
+pragma solidity ^0.8.36;
 
 import {Test} from "forge-std/Test.sol";
 import {FROST} from "src/FROST.sol";
@@ -8,12 +8,14 @@ import {Secp256k1} from "src/utils/cryptography/Secp256k1.sol";
 
 contract SchnorrTest is Test {
     function test_IsValidPublicKey() public pure {
+        // forge-lint: disable-next-item(too-many-digits)
         assertFalse(
             Schnorr.isValidPublicKey(
                 0x0000000000000000000000000000000000000000000000000000000000000000,
                 0x8F537EEFDFC1606A0727CD69B4A7333D38ED44E3932A7179EECB4B6FBA9360DC
             )
         );
+        // forge-lint: disable-next-item(too-many-digits)
         assertTrue(
             Schnorr.isValidPublicKey(
                 0x0000000000000000000000000000000000000000000000000000000000000001,

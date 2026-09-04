@@ -1,5 +1,5 @@
 // SPDX-License-Identifier: MIT
-pragma solidity ^0.8.35;
+pragma solidity ^0.8.36;
 
 /**
  * @dev Library for low-level memory interaction.
@@ -12,7 +12,9 @@ library Memory {
      */
     function allocateUnbounded() internal pure returns (uint256 memPtr) {
         // https://github.com/argotorg/solidity/blob/v0.8.35/libsolidity/codegen/YulUtilFunctions.cpp#L3241
+        // forge-lint: disable-next-item(inline-assembly)
         assembly ("memory-safe") {
+            /* reviewed: ... */
             memPtr := mload(0x40)
         }
     }
@@ -25,7 +27,9 @@ library Memory {
      */
     function allocate(uint256 size) internal pure returns (uint256 memPtr) {
         // https://github.com/argotorg/solidity/blob/v0.8.35/libsolidity/codegen/YulUtilFunctions.cpp#L3224
+        // forge-lint: disable-next-item(inline-assembly)
         assembly ("memory-safe") {
+            /* reviewed: ... */
             // https://github.com/argotorg/solidity/blob/v0.8.35/libsolidity/codegen/YulUtilFunctions.cpp#L3241
             memPtr := mload(0x40)
             // https://github.com/argotorg/solidity/blob/v0.8.35/libsolidity/codegen/YulUtilFunctions.cpp#L3256
@@ -43,11 +47,14 @@ library Memory {
      */
     function zeroize(uint256 dataStart, uint256 dataSizeInBytes) internal pure {
         // https://github.com/argotorg/solidity/blob/v0.8.35/libsolidity/codegen/YulUtilFunctions.cpp#L3283
+        // forge-lint: disable-next-item(inline-assembly)
         assembly ("memory-safe") {
+            /* reviewed: ... */
             calldatacopy(dataStart, calldatasize(), dataSizeInBytes)
         }
     }
 
+    /// forge-lint: disable-next-item(internal-function-used-once)
     /**
      * @dev Copies data from calldata to memory.
      * @param memPtr Pointer to memory.
@@ -55,7 +62,9 @@ library Memory {
      * @param data Calldata to copy.
      */
     function copyFromCalldata(uint256 memPtr, uint256 offset, bytes calldata data) internal pure {
+        // forge-lint: disable-next-item(inline-assembly)
         assembly ("memory-safe") {
+            /* reviewed: ... */
             calldatacopy(add(memPtr, offset), data.offset, data.length)
         }
     }
@@ -67,8 +76,10 @@ library Memory {
      * @return word Word from memory.
      */
     function readWord(uint256 memPtr, uint256 offset) internal pure returns (uint256 word) {
-        // https://evm.codes/#51
+        // forge-lint: disable-next-item(inline-assembly)
         assembly ("memory-safe") {
+            /* reviewed: ... */
+            // https://evm.codes/#51
             word := mload(add(memPtr, offset))
         }
     }
@@ -80,8 +91,10 @@ library Memory {
      * @return word Word from memory.
      */
     function readWordAsBytes32(uint256 memPtr, uint256 offset) internal pure returns (bytes32 word) {
-        // https://evm.codes/#51
+        // forge-lint: disable-next-item(inline-assembly)
         assembly ("memory-safe") {
+            /* reviewed: ... */
+            // https://evm.codes/#51
             word := mload(add(memPtr, offset))
         }
     }
@@ -93,8 +106,10 @@ library Memory {
      * @param value Word to write.
      */
     function writeWord(uint256 memPtr, uint256 offset, uint256 value) internal pure {
-        // https://evm.codes/#52
+        // forge-lint: disable-next-item(inline-assembly)
         assembly ("memory-safe") {
+            /* reviewed: ... */
+            // https://evm.codes/#52
             mstore(add(memPtr, offset), value)
         }
     }
@@ -106,8 +121,10 @@ library Memory {
      * @param value Word to write.
      */
     function writeWordAsBytes32(uint256 memPtr, uint256 offset, bytes32 value) internal pure {
-        // https://evm.codes/#52
+        // forge-lint: disable-next-item(inline-assembly)
         assembly ("memory-safe") {
+            /* reviewed: ... */
+            // https://evm.codes/#52
             mstore(add(memPtr, offset), value)
         }
     }
@@ -119,8 +136,10 @@ library Memory {
      * @param value Byte to write.
      */
     function writeByte(uint256 memPtr, uint256 offset, uint256 value) internal pure {
-        // https://evm.codes/#53
+        // forge-lint: disable-next-item(inline-assembly)
         assembly ("memory-safe") {
+            /* reviewed: ... */
+            // https://evm.codes/#53
             mstore8(add(memPtr, offset), value)
         }
     }
@@ -132,8 +151,10 @@ library Memory {
      * @param value Byte to write.
      */
     function writeByteAsBytes32(uint256 memPtr, uint256 offset, bytes32 value) internal pure {
-        // https://evm.codes/#53
+        // forge-lint: disable-next-item(inline-assembly)
         assembly ("memory-safe") {
+            /* reviewed: ... */
+            // https://evm.codes/#53
             mstore8(add(memPtr, offset), value)
         }
     }

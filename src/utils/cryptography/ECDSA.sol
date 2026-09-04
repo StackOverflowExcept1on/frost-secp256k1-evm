@@ -1,5 +1,5 @@
 // SPDX-License-Identifier: MIT
-pragma solidity ^0.8.35;
+pragma solidity ^0.8.36;
 
 import {Memory} from "../Memory.sol";
 
@@ -35,8 +35,10 @@ library ECDSA {
 
         Memory.writeWord(0x00, 0x00, 0x00);
 
-        // https://evm.codes/precompiled#0x01
+        // forge-lint: disable-next-item(inline-assembly)
         assembly ("memory-safe") {
+            // reviewed: Efficiently call pre-compiled with address 0x01.
+            // https://evm.codes/precompiled#0x01
             pop(staticcall(gas(), 0x01, memPtr, 0x80, 0x00, 0x20))
             recovered := mload(0x00)
         }

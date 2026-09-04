@@ -1,9 +1,9 @@
 // SPDX-License-Identifier: MIT
-pragma solidity ^0.8.35;
+pragma solidity ^0.8.36;
 
-import {FROSTCounter} from "./FROSTCounter.sol";
 import {Test, Vm} from "forge-std/Test.sol";
 import {FROSTOffchain, SigningKey} from "src/FROSTOffchain.sol";
+import {FROSTCounter} from "test/examples/FROSTCounter.sol";
 
 contract FROSTCounterTest is Test {
     using FROSTOffchain for SigningKey;

@@ -1,18 +1,21 @@
 #!/usr/bin/env bash
 cat <<EOF > src/Counter.sol
 // SPDX-License-Identifier: MIT
-pragma solidity ^0.8.35;
+pragma solidity ^0.8.36;
 
 import {FROST} from "./FROST.sol";
 
+/// forge-lint: disable-next-item(locked-ether)
 contract Counter {
     constructor() payable {}
 
     function method1(uint256 publicKeyX, uint256 publicKeyY) external payable {
+        // forge-lint: disable-next-item(custom-errors)
         require(FROST.isValidPublicKey(publicKeyX, publicKeyY));
     }
 
     function method2(uint256 publicKeyX, uint256 publicKeyY) external payable {
+        // forge-lint: disable-next-item(custom-errors)
         require(!FROST.isValidPublicKey(publicKeyX, publicKeyY));
     }
 }
@@ -24,18 +27,21 @@ FUNC_IS_VALID_PUBLIC_KEY=$(grep -Pzo '.*function\s+fun_isValidPublicKey\([^\)]*\
 
 cat <<EOF > src/Counter.sol
 // SPDX-License-Identifier: MIT
-pragma solidity ^0.8.35;
+pragma solidity ^0.8.36;
 
 import {FROST} from "./FROST.sol";
 
+/// forge-lint: disable-next-item(locked-ether)
 contract Counter {
     constructor() payable {}
 
     function method1(uint256 publicKeyX, uint256 publicKeyY, uint256 signatureCommitmentX, uint256 signatureCommitmentY, uint256 signatureZ, bytes32 messageHash) external payable {
+        // forge-lint: disable-next-item(custom-errors)
         require(FROST.verifySignature(publicKeyX, publicKeyY, signatureCommitmentX, signatureCommitmentY, signatureZ, messageHash));
     }
 
     function method2(uint256 publicKeyX, uint256 publicKeyY, uint256 signatureCommitmentX, uint256 signatureCommitmentY, uint256 signatureZ, bytes32 messageHash) external payable {
+        // forge-lint: disable-next-item(custom-errors)
         require(!FROST.verifySignature(publicKeyX, publicKeyY, signatureCommitmentX, signatureCommitmentY, signatureZ, messageHash));
     }
 }
@@ -49,7 +55,7 @@ rm src/Counter.sol
 
 cat <<EOF > src/TranspiledFROST.sol
 // SPDX-License-Identifier: MIT
-pragma solidity ^0.8.35;
+pragma solidity ^0.8.36;
 
 /**
  * @dev Transpiled library for verifying \`FROST-secp256k1-KECCAK256\` signatures.
@@ -63,12 +69,15 @@ library TranspiledFROST {
      * @return _isValidPublicKey \`true\` if public key is valid, \`false\` otherwise.
      */
     function isValidPublicKey(uint256 publicKeyX, uint256 publicKeyY) internal pure returns (bool _isValidPublicKey) {
+        // forge-lint: disable-start(inline-assembly, literal-instead-of-constant, too-many-digits)
         assembly ("memory-safe") {
 $FUNC_IS_VALID_PUBLIC_KEY
             _isValidPublicKey := fun_isValidPublicKey(publicKeyX, publicKeyY)
         }
+        // forge-lint: disable-end(inline-assembly, literal-instead-of-constant, too-many-digits)
     }
 
+    /// forge-lint: disable-next-item(internal-function-used-once)
     /**
      * @dev Verifies \`FROST-secp256k1-KECCAK256\` signature by formula \$zG - cX = R$.
      *      - Public key (\$X$) must be checked with \`FROST.isValidPublicKey(publicKeyX, publicKeyY)\`.
@@ -92,11 +101,13 @@ $FUNC_IS_VALID_PUBLIC_KEY
         uint256 signatureZ,
         bytes32 messageHash
     ) internal view returns (bool isValidSignature) {
+        // forge-lint: disable-start(inline-assembly, literal-instead-of-constant, too-many-digits)
         assembly ("memory-safe") {
 $FUNC_VERIFY_SIGNATURE
             isValidSignature :=
                 fun_verifySignature(publicKeyX, publicKeyY, signatureCommitmentX, signatureCommitmentY, signatureZ, messageHash)
         }
+        // forge-lint: disable-end(inline-assembly, literal-instead-of-constant, too-many-digits)
     }
 }
 EOF

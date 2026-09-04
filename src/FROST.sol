@@ -1,5 +1,5 @@
 // SPDX-License-Identifier: MIT
-pragma solidity ^0.8.35;
+pragma solidity ^0.8.36;
 
 import {Memory} from "./utils/Memory.sol";
 import {Hashes} from "./utils/cryptography/Hashes.sol";
@@ -36,15 +36,31 @@ library FROST {
     uint256 internal constant OUTPUT_HASH_SIZE = INPUT_HASH_SIZE + RESERVED_BYTE_SIZE + DOMAIN_SIZE
         + DOMAIN_LENGTH_SIZE;
 
-    // "\x00\x30" - len_in_bytes_u16
-    // "\x00" - zero byte
-    // "FROST-secp256k1-KECCAK256-v1c" - domain
+    /// forge-lint: disable-next-item(too-many-digits)
+    /**
+     * @dev Domain separator 1.
+     *      "\x00\x30" - len_in_bytes_u16
+     *      "\x00" - zero byte
+     *      "FROST-secp256k1-KECCAK256-v1c" - domain
+     */
     uint256 internal constant DOMAIN_SEPARATOR1 = 0x00300046524F53542D736563703235366B312D4B454343414B3235362D763163;
-    // "hal" - domain
-    // "\x20" - domain length
+    /// forge-lint: disable-next-item(too-many-digits)
+    /**
+     * @dev Domain separator 2.
+     *      "hal" - domain
+     *      "\x20" - domain length
+     */
     uint256 internal constant DOMAIN_SEPARATOR2 = 0x68616C2000000000000000000000000000000000000000000000000000000000;
 
+    /// forge-lint: disable-next-item(too-many-digits)
+    /**
+     * @dev Constant for 2^192.
+     */
     uint256 internal constant F_2_192 = 0x0000000000000001000000000000000000000000000000000000000000000000;
+    /// forge-lint: disable-next-item(too-many-digits)
+    /**
+     * @dev Mask for 64-bit values.
+     */
     uint256 internal constant MASK_64 = 0x000000000000000000000000000000000000000000000000FFFFFFFFFFFFFFFF;
 
     /**

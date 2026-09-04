@@ -1,5 +1,5 @@
 // SPDX-License-Identifier: MIT
-pragma solidity ^0.8.35;
+pragma solidity ^0.8.36;
 
 import {FROST} from "src/FROST.sol";
 import {Memory} from "src/utils/Memory.sol";
@@ -53,7 +53,9 @@ contract FROSTWalletOptimized {
         );
 
         bool success;
+        // forge-lint: disable-next-item(inline-assembly)
         assembly ("memory-safe") {
+            // reviewed: Native call is used for bytecode optimization.
             success := call(gas(), to, value, add(memPtr, 0xc0), data.length, 0x00, 0x00)
         }
         require(success);

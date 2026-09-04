@@ -1,5 +1,5 @@
 // SPDX-License-Identifier: MIT
-pragma solidity ^0.8.35;
+pragma solidity ^0.8.36;
 
 import {Memory} from "../Memory.sol";
 import {ModExp} from "./ModExp.sol";
@@ -34,7 +34,7 @@ library Secp256k1Arithmetic {
     /**
      * @dev Auxiliary constant $\frac{p + 1}{4}$, used during point decompression.
      * @dev Square root of an secp256k1 field element `x` can be computed via `modexp(x, SQRT_EXPONENT, P)`:
-     *      - https://github.com/ethereum/eth-keys/blob/v0.7.0/eth_keys/backends/native/ecdsa.py#L164
+     *      - https://github.com/ApeWorX/eth-keys/blob/v0.8.0/eth_keys/backends/native/ecdsa.py#L178
      *      - https://github.com/RustCrypto/elliptic-curves/blob/k256/v0.13.4/k256/src/arithmetic/field.rs#L206
      */
     uint256 internal constant SQRT_EXPONENT = (P + 1) / 4;
@@ -147,7 +147,9 @@ library Secp256k1Arithmetic {
         Memory.writeWord(memPtr, 0x00, 33);
         Memory.writeByte(memPtr, 0x20, yCompressed);
         Memory.writeWord(memPtr, 0x21, x);
+        // forge-lint: disable-next-item(inline-assembly)
         assembly ("memory-safe") {
+            // reviewed: Write to already allocated buffer to avoid allocating new memory.
             compressedPoint := memPtr
         }
     }
@@ -169,7 +171,9 @@ library Secp256k1Arithmetic {
         uint256 x;
         uint256 y;
 
+        // forge-lint: disable-next-item(inline-assembly)
         assembly ("memory-safe") {
+            // reviewed: Efficiently loads data directly from memory.
             compressedY := byte(0, mload(add(compressedPoint, 0x20)))
             x := mload(add(compressedPoint, 0x21))
         }
@@ -193,11 +197,12 @@ library Secp256k1Arithmetic {
         view
         returns (uint256, uint256)
     {
+        // forge-lint: disable-next-item(custom-errors)
         require(yCompressed == 2 || yCompressed == 3);
 
         // https://github.com/RustCrypto/elliptic-curves/blob/k256/v0.13.4/k256/src/arithmetic/affine.rs#L187
         uint256 alpha = addmod(mulmod(x, mulmod(x, x, P), P), B, P);
-        // https://github.com/ethereum/eth-keys/blob/v0.7.0/eth_keys/backends/native/ecdsa.py#L165
+        // https://github.com/ApeWorX/eth-keys/blob/v0.8.0/eth_keys/backends/native/ecdsa.py#L179
         uint256 beta = ModExp.modexp(memPtr, alpha, SQRT_EXPONENT, P);
 
         uint256 y;
@@ -205,6 +210,7 @@ library Secp256k1Arithmetic {
             y = beta & 1 == yCompressed & 1 ? beta : P - beta;
         }
 
+        // forge-lint: disable-next-item(custom-errors)
         require(Secp256k1.isOnCurve(x, y));
 
         return (x, y);

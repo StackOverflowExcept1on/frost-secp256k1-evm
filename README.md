@@ -111,7 +111,7 @@ Solidity, but with one difference: if at least `t` (or more than `t`) of `n` par
 
 ```solidity
 // SPDX-License-Identifier: MIT
-pragma solidity ^0.8.35;
+pragma solidity ^0.8.36;
 
 import {FROST} from "frost-secp256k1-evm/FROST.sol";
 
@@ -135,10 +135,10 @@ contract FROSTCounter {
         uint256 signatureCommitmentY,
         uint256 signatureZ
     ) public {
-        /// forge-lint: disable-start(asm-keccak256)
+        // forge-lint: disable-start(asm-keccak256)
         bytes32 messageHash =
             keccak256(abi.encodePacked(block.chainid, uint256(uint160(address(this))), nonce, newNumber));
-        /// forge-lint: disable-end(asm-keccak256)
+        // forge-lint: disable-end(asm-keccak256)
         nonce++;
         // NOTE: `require(FROST.isValidPublicKey(...))` is checked in constructor
         require(
@@ -172,7 +172,7 @@ must do this so as not to know group private key and not to affect value in `FRO
 
 ```solidity
 // SPDX-License-Identifier: MIT
-pragma solidity ^0.8.35;
+pragma solidity ^0.8.36;
 
 import {Test, Vm} from "forge-std/Test.sol";
 import {FROST} from "frost-secp256k1-evm/FROST.sol";
