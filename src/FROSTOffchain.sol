@@ -1,5 +1,5 @@
 // SPDX-License-Identifier: MIT
-pragma solidity ^0.8.36;
+pragma solidity ^0.8.37;
 
 import {FROST} from "./FROST.sol";
 import {ChaChaRngOffchain} from "./utils/cryptography/ChaChaRngOffchain.sol";

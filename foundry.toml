@@ -4,7 +4,7 @@ out = "out"
 libs = ["dependencies"]
 remappings = ["forge-std/=dependencies/forge-std-1.16.2/src/"]
 evm_version = "osaka"
-solc = "0.8.36"
+solc = "0.8.37"
 optimizer = true
 extra_output_files = ["irOptimized"]
 via_ir = true
