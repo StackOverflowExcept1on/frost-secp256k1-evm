@@ -38,6 +38,10 @@ library Secp256k1Arithmetic {
      *      - https://github.com/RustCrypto/elliptic-curves/blob/k256/v0.13.4/k256/src/arithmetic/field.rs#L206
      */
     uint256 internal constant SQRT_EXPONENT = (P + 1) / 4;
+    /**
+     * @dev Size of compressed SEC1 elliptic curve point in bytes.
+     */
+    uint256 internal constant COMPRESSED_POINT_SIZE = 33;
 
     /**
      * @dev Returns additive identity in affine coordinates.
@@ -144,9 +148,9 @@ library Secp256k1Arithmetic {
         returns (bytes memory compressedPoint)
     {
         uint256 yCompressed = Secp256k1.yCompressed(y);
-        Memory.writeWord(memPtr, 0x00, 33);
+        Memory.writeWord(memPtr, 0x00, COMPRESSED_POINT_SIZE);
         Memory.writeByte(memPtr, 0x20, yCompressed);
-        Memory.writeWord(memPtr, 0x21, x);
+        Memory.writeWord(memPtr, COMPRESSED_POINT_SIZE, x);
         // forge-lint: disable-next-item(inline-assembly)
         assembly ("memory-safe") {
             // reviewed: Write to already allocated buffer to avoid allocating new memory.

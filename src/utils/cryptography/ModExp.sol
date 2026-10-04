@@ -8,6 +8,11 @@ import {Memory} from "../Memory.sol";
  */
 library ModExp {
     /**
+     * @dev Size of single EVM word in bytes.
+     */
+    uint256 internal constant WORD_SIZE = 0x20;
+
+    /**
      * @dev Calculates modular exponentiation `(base ** exponent) % modulus`.
      *      The fifth contract performs arbitrary-precision exponentiation under modulo.
      *      Here, $0^0$ is taken to be one, and $x \mod 0$ is zero for all $x$
@@ -23,9 +28,9 @@ library ModExp {
         view
         returns (uint256 result)
     {
-        Memory.writeWord(memPtr, 0x00, 0x20);
-        Memory.writeWord(memPtr, 0x20, 0x20);
-        Memory.writeWord(memPtr, 0x40, 0x20);
+        Memory.writeWord(memPtr, 0x00, WORD_SIZE);
+        Memory.writeWord(memPtr, 0x20, WORD_SIZE);
+        Memory.writeWord(memPtr, 0x40, WORD_SIZE);
         Memory.writeWord(memPtr, 0x60, base);
         Memory.writeWord(memPtr, 0x80, exponent);
         Memory.writeWord(memPtr, 0xa0, modulus);
