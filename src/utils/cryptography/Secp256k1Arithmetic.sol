@@ -1,9 +1,9 @@
 // SPDX-License-Identifier: MIT
-pragma solidity ^0.8.37;
+pragma solidity ^0.8.38;
 
 import {Memory} from "../Memory.sol";
 import {ModExp} from "./ModExp.sol";
-import {Secp256k1} from "./Secp256k1.sol";
+import {StdSecp256k1} from "forge-std/StdSecp256k1.sol";
 
 /**
  * @dev Library for interaction with secp256k1 elliptic curve arithmetic.
@@ -12,11 +12,11 @@ library Secp256k1Arithmetic {
     /**
      * @dev Curve parameter `b = 7`.
      */
-    uint256 internal constant B = Secp256k1.B;
+    uint256 internal constant B = StdSecp256k1.B;
     /**
-     * @dev Prime number, public key `(x, y)`, where `(x, y)` must be in `[0, Secp256k1.P)`.
+     * @dev Prime number, public key `(x, y)`, where `(x, y)` must be in `[0, StdSecp256k1.P)`.
      */
-    uint256 internal constant P = Secp256k1.P;
+    uint256 internal constant P = StdSecp256k1.P;
     /**
      * @dev Auxiliary constant $b_3 = 3 \cdot b$, used in Renes-Costello-Batina 2015.
      * @dev Renes-Costello-Batina 2015 ("Complete addition formulas for prime order elliptic curves"):
@@ -46,7 +46,7 @@ library Secp256k1Arithmetic {
     /**
      * @dev Returns additive identity in affine coordinates.
      *      The identity point in affine coordinates is represented as `(x, y) = (0, 0)`,
-     *      but this point is not on curve: `Secp256k1.isOnCurve(0, 0) == false`
+     *      but this point is not on curve: `StdSecp256k1.isOnCurve(0, 0) == false`
      *      (identity point is not valid public key).
      * @return x Affine point x.
      * @return y Affine point y.
@@ -147,7 +147,7 @@ library Secp256k1Arithmetic {
         pure
         returns (bytes memory compressedPoint)
     {
-        uint256 yCompressed = Secp256k1.yCompressed(y);
+        uint256 yCompressed = StdSecp256k1.yCompressed(y);
         Memory.writeWord(memPtr, 0x00, COMPRESSED_POINT_SIZE);
         Memory.writeByte(memPtr, 0x20, yCompressed);
         Memory.writeWord(memPtr, COMPRESSED_POINT_SIZE, x);
@@ -215,7 +215,7 @@ library Secp256k1Arithmetic {
         }
 
         // forge-lint: disable-next-item(custom-errors)
-        require(Secp256k1.isOnCurve(x, y));
+        require(StdSecp256k1.isOnCurve(x, y));
 
         return (x, y);
     }

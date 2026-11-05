@@ -1,10 +1,10 @@
 // SPDX-License-Identifier: MIT
-pragma solidity ^0.8.37;
+pragma solidity ^0.8.38;
 
 import {Memory} from "./utils/Memory.sol";
 import {Hashes} from "./utils/cryptography/Hashes.sol";
 import {Schnorr} from "./utils/cryptography/Schnorr.sol";
-import {Secp256k1} from "./utils/cryptography/Secp256k1.sol";
+import {StdSecp256k1} from "forge-std/StdSecp256k1.sol";
 
 /**
  * @dev Library for verifying `FROST-secp256k1-KECCAK256` signatures.
@@ -64,8 +64,8 @@ library FROST {
     uint256 internal constant MASK_64 = 0x000000000000000000000000000000000000000000000000FFFFFFFFFFFFFFFF;
 
     /**
-     * @dev Checks if public key `(x, y)` is on curve and that `x < Secp256k1.N`.
-     *      It also checks that `x % Secp256k1.N != 0`.
+     * @dev Checks if public key `(x, y)` is on curve and that `x < StdSecp256k1.N`.
+     *      It also checks that `x % StdSecp256k1.N != 0`.
      * @param publicKeyX Public key x.
      * @param publicKeyY Public key y.
      * @return isValidPublicKey `true` if public key is valid, `false` otherwise.
@@ -95,8 +95,8 @@ library FROST {
         // https://github.com/ZcashFoundation/frost/blob/frost-secp256k1/v3.0.0/frost-secp256k1/src/lib.rs#L195
         // https://github.com/ZcashFoundation/frost/blob/frost-secp256k1/v3.0.0/frost-secp256k1/src/lib.rs#L160
 
-        uint256 publicKeyYCompressed = Secp256k1.yCompressed(publicKeyY);
-        uint256 signatureCommitmentYCompressed = Secp256k1.yCompressed(signatureCommitmentY);
+        uint256 publicKeyYCompressed = StdSecp256k1.yCompressed(publicKeyY);
+        uint256 signatureCommitmentYCompressed = StdSecp256k1.yCompressed(signatureCommitmentY);
 
         // https://github.com/RustCrypto/traits/blob/elliptic-curve-v0.13.8/elliptic-curve/src/hash2curve/hash2field.rs#L35
         // https://github.com/RustCrypto/traits/blob/elliptic-curve-v0.13.8/elliptic-curve/src/hash2curve/hash2field/expand_msg/xmd.rs#L43
@@ -142,16 +142,16 @@ library FROST {
         uint256 d0 = bVals >> 64;
         uint256 d1 = ((bVals & MASK_64) << 128) | (bVals2 >> 128);
 
-        return (memPtr, addmod(mulmod(d0, F_2_192, Secp256k1.N), d1, Secp256k1.N));
+        return (memPtr, addmod(mulmod(d0, F_2_192, StdSecp256k1.N), d1, StdSecp256k1.N));
     }
 
     /**
      * @dev Verifies `FROST-secp256k1-KECCAK256` signature by formula $zG - cX = R$.
      *      - Public key ($X$) must be checked with `FROST.isValidPublicKey(publicKeyX, publicKeyY)`.
      *      - Signature R ($R$) must be on curve.
-     *      - Signature Z ($z$) must be in `[1, Secp256k1.N)`.
+     *      - Signature Z ($z$) must be in `[1, StdSecp256k1.N)`.
      *      - Challenge ($c$) is computed via `FROST.computeChallenge(...)`,
-     *        must be in `[1, Secp256k1.N)`.
+     *        must be in `[1, StdSecp256k1.N)`.
      * @param publicKeyX Public key x.
      * @param publicKeyY Public key y.
      * @param signatureCommitmentX Signature commitment R x.
@@ -172,30 +172,30 @@ library FROST {
         // https://github.com/ZcashFoundation/frost/blob/frost-secp256k1/v3.0.0/frost-core/src/traits.rs#L260
         // https://github.com/ZcashFoundation/frost/blob/frost-secp256k1/v3.0.0/frost-core/src/verifying_key.rs#L56
 
-        if (!Secp256k1.isOnCurve(signatureCommitmentX, signatureCommitmentY)) {
+        if (!StdSecp256k1.isOnCurve(signatureCommitmentX, signatureCommitmentY)) {
             return false;
         }
 
-        // `signatureZ` is always in `[1, Secp256k1.N)` and valid non-zero scalar because:
+        // `signatureZ` is always in `[1, StdSecp256k1.N)` and valid non-zero scalar because:
         // 1. `signatureZ = 0` is checked.
-        // 2. `signatureZ >= Secp256k1.N` is checked.
-        // thus `signatureZ % Secp256k1.N != 0`.
+        // 2. `signatureZ >= StdSecp256k1.N` is checked.
+        // thus `signatureZ % StdSecp256k1.N != 0`.
         if (signatureZ == 0) {
             return false;
         }
 
-        if (signatureZ >= Secp256k1.N) {
+        if (signatureZ >= StdSecp256k1.N) {
             return false;
         }
 
         (uint256 memPtr, uint256 challenge) =
             computeChallenge(publicKeyX, publicKeyY, signatureCommitmentX, signatureCommitmentY, messageHash);
 
-        // `challenge` is always in `[1, Secp256k1.N)` and valid non-zero scalar because:
-        // 1. `FROST.computeChallenge(...)` returns `challenge < Secp256k1.N`
+        // `challenge` is always in `[1, StdSecp256k1.N)` and valid non-zero scalar because:
+        // 1. `FROST.computeChallenge(...)` returns `challenge < StdSecp256k1.N`
         //    (it uses modular arithmetic).
         // 2. `challenge = 0` is checked.
-        // thus `challenge % Secp256k1.N != 0`.
+        // thus `challenge % StdSecp256k1.N != 0`.
         if (challenge == 0) {
             return false;
         }

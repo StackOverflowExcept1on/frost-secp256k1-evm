@@ -1,10 +1,10 @@
 // SPDX-License-Identifier: MIT
-pragma solidity ^0.8.37;
+pragma solidity ^0.8.38;
 
+import {StdSecp256k1} from "forge-std/StdSecp256k1.sol";
 import {Test, Vm} from "forge-std/Test.sol";
 import {Memory} from "src/utils/Memory.sol";
 import {ChaChaRngOffchain} from "src/utils/cryptography/ChaChaRngOffchain.sol";
-import {Secp256k1} from "src/utils/cryptography/Secp256k1.sol";
 import {Secp256k1Arithmetic} from "src/utils/cryptography/Secp256k1Arithmetic.sol";
 import {Secp256k1ArithmeticWrapper} from "test/utils/cryptography/Secp256k1ArithmeticWrapper.sol";
 
@@ -75,7 +75,7 @@ contract Secp256k1ArithmeticTest is Test {
         uint256 scalar = 2;
         Vm.Wallet memory wallet = vm.createWallet(scalar);
         (uint256 x1, uint256 y1, uint256 z1) =
-            Secp256k1Arithmetic.convertAffinePointToProjectivePoint(Secp256k1.GX, Secp256k1.GY);
+            Secp256k1Arithmetic.convertAffinePointToProjectivePoint(StdSecp256k1.GX, StdSecp256k1.GY);
         (uint256 x2, uint256 y2, uint256 z2) = Secp256k1Arithmetic.doubleProjectivePoint(x1, y1, z1);
         assertNotEq(z2, 1);
         uint256 memPtr = Memory.allocate(192);
@@ -89,7 +89,7 @@ contract Secp256k1ArithmeticTest is Test {
         Vm.Wallet memory wallet = vm.createWallet(scalar);
         uint256 memPtr = Memory.allocate(192);
         (uint256 x1, uint256 y1) = Secp256k1Arithmetic.decompressToAffinePoint(
-            memPtr, wallet.publicKeyX, Secp256k1.yCompressed(wallet.publicKeyY)
+            memPtr, wallet.publicKeyX, StdSecp256k1.yCompressed(wallet.publicKeyY)
         );
         assertEq(x1, wallet.publicKeyX);
         assertEq(y1, wallet.publicKeyY);
@@ -121,7 +121,7 @@ contract Secp256k1ArithmeticTest is Test {
         uint256 scalar2 = 3;
         Vm.Wallet memory wallet2 = vm.createWallet(scalar2);
         (uint256 x1, uint256 y1, uint256 z1) =
-            Secp256k1Arithmetic.convertAffinePointToProjectivePoint(Secp256k1.GX, Secp256k1.GY);
+            Secp256k1Arithmetic.convertAffinePointToProjectivePoint(StdSecp256k1.GX, StdSecp256k1.GY);
         (uint256 x2, uint256 y2, uint256 z2) = Secp256k1Arithmetic.addProjectivePoint(x1, y1, z1, x1, y1, z1);
         uint256 memPtr = Memory.allocate(192);
         (uint256 x3, uint256 y3) = Secp256k1Arithmetic.convertProjectivePointToAffinePoint(memPtr, x2, y2, z2);
@@ -137,7 +137,7 @@ contract Secp256k1ArithmeticTest is Test {
         uint256 scalar = 2;
         Vm.Wallet memory wallet = vm.createWallet(scalar);
         (uint256 x1, uint256 y1, uint256 z1) =
-            Secp256k1Arithmetic.convertAffinePointToProjectivePoint(Secp256k1.GX, Secp256k1.GY);
+            Secp256k1Arithmetic.convertAffinePointToProjectivePoint(StdSecp256k1.GX, StdSecp256k1.GY);
         (uint256 x2, uint256 y2, uint256 z2) = Secp256k1Arithmetic.doubleProjectivePoint(x1, y1, z1);
         uint256 memPtr = Memory.allocate(192);
         (uint256 x3, uint256 y3) = Secp256k1Arithmetic.convertProjectivePointToAffinePoint(memPtr, x2, y2, z2);
@@ -148,7 +148,7 @@ contract Secp256k1ArithmeticTest is Test {
     function test_MulProjectivePointZeroScalar() public pure {
         uint256 scalar = 0;
         (uint256 x1, uint256 y1, uint256 z1) =
-            Secp256k1Arithmetic.convertAffinePointToProjectivePoint(Secp256k1.GX, Secp256k1.GY);
+            Secp256k1Arithmetic.convertAffinePointToProjectivePoint(StdSecp256k1.GX, StdSecp256k1.GY);
         (uint256 x2,, uint256 z2) = Secp256k1Arithmetic.mulProjectivePoint(x1, y1, z1, scalar);
         assertTrue(Secp256k1Arithmetic.isIdentityProjectivePoint(x2, z2));
     }
@@ -157,7 +157,7 @@ contract Secp256k1ArithmeticTest is Test {
         uint256 scalar = ChaChaRngOffchain.randomNonZeroScalar();
         Vm.Wallet memory wallet = vm.createWallet(scalar);
         (uint256 x1, uint256 y1, uint256 z1) =
-            Secp256k1Arithmetic.convertAffinePointToProjectivePoint(Secp256k1.GX, Secp256k1.GY);
+            Secp256k1Arithmetic.convertAffinePointToProjectivePoint(StdSecp256k1.GX, StdSecp256k1.GY);
         (uint256 x2, uint256 y2, uint256 z2) = Secp256k1Arithmetic.mulProjectivePoint(x1, y1, z1, scalar);
         uint256 memPtr = Memory.allocate(192);
         (uint256 x3, uint256 y3) = Secp256k1Arithmetic.convertProjectivePointToAffinePoint(memPtr, x2, y2, z2);
@@ -177,7 +177,7 @@ contract Secp256k1ArithmeticTest is Test {
     function test_MulAffinePointAsProjectiveZeroScalar() public view {
         uint256 scalar = 0;
         (uint256 x1, uint256 y1, uint256 z1) =
-            Secp256k1Arithmetic.mulAffinePointAsProjective(Secp256k1.GX, Secp256k1.GY, scalar);
+            Secp256k1Arithmetic.mulAffinePointAsProjective(StdSecp256k1.GX, StdSecp256k1.GY, scalar);
         uint256 memPtr = Memory.allocate(192);
         (uint256 x2, uint256 y2) = Secp256k1Arithmetic.convertProjectivePointToAffinePoint(memPtr, x1, y1, z1);
         assertTrue(Secp256k1Arithmetic.isIdentityAffinePoint(x2, y2));
@@ -187,7 +187,7 @@ contract Secp256k1ArithmeticTest is Test {
         uint256 scalar = ChaChaRngOffchain.randomNonZeroScalar();
         Vm.Wallet memory wallet = vm.createWallet(scalar);
         (uint256 x1, uint256 y1, uint256 z1) =
-            Secp256k1Arithmetic.mulAffinePointAsProjective(Secp256k1.GX, Secp256k1.GY, scalar);
+            Secp256k1Arithmetic.mulAffinePointAsProjective(StdSecp256k1.GX, StdSecp256k1.GY, scalar);
         uint256 memPtr = Memory.allocate(192);
         (uint256 x2, uint256 y2) = Secp256k1Arithmetic.convertProjectivePointToAffinePoint(memPtr, x1, y1, z1);
         assertEq(x2, wallet.publicKeyX);
@@ -205,7 +205,7 @@ contract Secp256k1ArithmeticTest is Test {
     function test_MulAffinePointZeroScalar() public view {
         uint256 scalar = 0;
         uint256 memPtr = Memory.allocate(192);
-        (uint256 x1, uint256 y1) = Secp256k1Arithmetic.mulAffinePoint(memPtr, Secp256k1.GX, Secp256k1.GY, scalar);
+        (uint256 x1, uint256 y1) = Secp256k1Arithmetic.mulAffinePoint(memPtr, StdSecp256k1.GX, StdSecp256k1.GY, scalar);
         assertTrue(Secp256k1Arithmetic.isIdentityAffinePoint(x1, y1));
     }
 
@@ -213,7 +213,7 @@ contract Secp256k1ArithmeticTest is Test {
         uint256 scalar = ChaChaRngOffchain.randomNonZeroScalar();
         Vm.Wallet memory wallet = vm.createWallet(scalar);
         uint256 memPtr = Memory.allocate(192);
-        (uint256 x1, uint256 y1) = Secp256k1Arithmetic.mulAffinePoint(memPtr, Secp256k1.GX, Secp256k1.GY, scalar);
+        (uint256 x1, uint256 y1) = Secp256k1Arithmetic.mulAffinePoint(memPtr, StdSecp256k1.GX, StdSecp256k1.GY, scalar);
         assertEq(x1, wallet.publicKeyX);
         assertEq(y1, wallet.publicKeyY);
     }

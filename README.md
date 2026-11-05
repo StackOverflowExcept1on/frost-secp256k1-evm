@@ -74,7 +74,6 @@ frost-secp256k1-evm
    │  ├─ Hashes - "Library for low-level interaction with standard hash functions"
    │  ├─ ModExp - "Library for low-level modular exponentiation"
    │  ├─ Schnorr - "Library for verifying Schnorr's signatures"
-   │  ├─ Secp256k1 - "Library for interaction with secp256k1 elliptic curve"
    │  └─ Secp256k1Arithmetic - "Library for interaction with secp256k1 elliptic curve arithmetic"
    └─ Memory - "Library for low-level memory interaction"
 ```
@@ -111,7 +110,7 @@ Solidity, but with one difference: if at least `t` (or more than `t`) of `n` par
 
 ```solidity
 // SPDX-License-Identifier: MIT
-pragma solidity ^0.8.37;
+pragma solidity ^0.8.38;
 
 import {FROST} from "frost-secp256k1-evm/FROST.sol";
 
@@ -172,7 +171,7 @@ must do this so as not to know group private key and not to affect value in `FRO
 
 ```solidity
 // SPDX-License-Identifier: MIT
-pragma solidity ^0.8.37;
+pragma solidity ^0.8.38;
 
 import {Test, Vm} from "forge-std/Test.sol";
 import {FROST} from "frost-secp256k1-evm/FROST.sol";
@@ -243,7 +242,7 @@ Known edge cases with FROST signature verification:
 
   :information_source: Your application must simply re-generate the signature (it's different each time).
 
-- If group public key has `X >= Secp256k1.N`, then math trick with `ecrecover` will not work.
+- If group public key has `X >= StdSecp256k1.N`, then math trick with `ecrecover` will not work.
 
   :warning: Before using `FROST.verifySignature(publicKeyX, publicKeyY, ...)`, check
   `FROST.isValidPublicKey(publicKeyX, publicKeyY)`.

@@ -1,7 +1,7 @@
 // SPDX-License-Identifier: MIT
-pragma solidity ^0.8.37;
+pragma solidity ^0.8.38;
 
-import {Secp256k1} from "./Secp256k1.sol";
+import {StdSecp256k1} from "forge-std/StdSecp256k1.sol";
 import {Vm} from "forge-std/Vm.sol";
 
 /**
@@ -18,7 +18,7 @@ library ChaChaRngOffchain {
     Vm internal constant vm = Vm(address(uint160(uint256(keccak256("hevm cheat code")))));
 
     /**
-     * @dev Generates valid `scalar` in `[0, Secp256k1.N)`.
+     * @dev Generates valid `scalar` in `[0, StdSecp256k1.N)`.
      * @return scalar valid `scalar`.
      */
     function randomScalar() internal view returns (uint256) {
@@ -29,7 +29,7 @@ library ChaChaRngOffchain {
             // forge-lint: disable-next-item(calls-loop, unsafe-typecast)
             uint256 scalar = uint256(bytes32(vm.randomBytes(32)));
 
-            if (Secp256k1.isValidScalar(scalar)) {
+            if (StdSecp256k1.isValidScalar(scalar)) {
                 return scalar;
             }
         }
@@ -39,7 +39,7 @@ library ChaChaRngOffchain {
     }
 
     /**
-     * @dev Generates valid non-zero `scalar` in `[1, Secp256k1.N)`.
+     * @dev Generates valid non-zero `scalar` in `[1, StdSecp256k1.N)`.
      * @return scalar valid non-zero `scalar`.
      */
     function randomNonZeroScalar() internal view returns (uint256) {
@@ -48,7 +48,7 @@ library ChaChaRngOffchain {
         while (true) {
             uint256 scalar = randomScalar();
 
-            if (Secp256k1.isValidNonZeroScalar(scalar)) {
+            if (StdSecp256k1.isValidNonZeroScalar(scalar)) {
                 return scalar;
             }
         }

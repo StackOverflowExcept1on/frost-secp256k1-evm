@@ -1,10 +1,10 @@
 // SPDX-License-Identifier: MIT
-pragma solidity ^0.8.37;
+pragma solidity ^0.8.38;
 
+import {StdSecp256k1} from "forge-std/StdSecp256k1.sol";
 import {Test} from "forge-std/Test.sol";
 import {Memory} from "src/utils/Memory.sol";
 import {ECDSA} from "src/utils/cryptography/ECDSA.sol";
-import {Secp256k1} from "src/utils/cryptography/Secp256k1.sol";
 
 contract ECDSATest is Test {
     function test_Recover() public view {
@@ -57,7 +57,7 @@ contract ECDSATest is Test {
 
     function test_RecoverWithValidRMax() public view {
         uint256 memPtr = Memory.allocate(128);
-        // `x = r = Secp256k1.N - 1` is not on curve
+        // `x = r = StdSecp256k1.N - 1` is not on curve
         uint256 r = 0xFFFFFFFFFFFFFFFFFFFFFFFFFFFFFFFEBAAEDCE6AF48A03BBFD25E8CD036413F;
         assertNotEq(ECDSA.recover(memPtr, 0, 27, r, 1), 0);
     }
@@ -77,8 +77,8 @@ contract ECDSATest is Test {
 
     function test_RecoverWithInvalidRSecp256k1N() public view {
         uint256 memPtr = Memory.allocate(128);
-        // `x = r = Secp256k1.N` is on curve, but this exceeds maximum value of scalar
-        uint256 r = Secp256k1.N;
+        // `x = r = StdSecp256k1.N` is on curve, but this exceeds maximum value of scalar
+        uint256 r = StdSecp256k1.N;
         assertEq(ECDSA.recover(memPtr, 0, 27, r, 1), 0);
     }
 
@@ -90,7 +90,7 @@ contract ECDSATest is Test {
 
     function test_RecoverWithValidSMax() public view {
         uint256 memPtr = Memory.allocate(128);
-        uint256 s = Secp256k1.N - 1;
+        uint256 s = StdSecp256k1.N - 1;
         assertNotEq(ECDSA.recover(memPtr, 0, 27, 1, s), 0);
     }
 
@@ -102,7 +102,7 @@ contract ECDSATest is Test {
 
     function test_RecoverWithInvalidSSecp256k1N() public view {
         uint256 memPtr = Memory.allocate(128);
-        uint256 s = Secp256k1.N;
+        uint256 s = StdSecp256k1.N;
         assertEq(ECDSA.recover(memPtr, 0, 27, 1, s), 0);
     }
 }

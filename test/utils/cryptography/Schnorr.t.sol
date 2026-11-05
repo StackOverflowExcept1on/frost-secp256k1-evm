@@ -1,10 +1,10 @@
 // SPDX-License-Identifier: MIT
-pragma solidity ^0.8.37;
+pragma solidity ^0.8.38;
 
+import {StdSecp256k1} from "forge-std/StdSecp256k1.sol";
 import {Test} from "forge-std/Test.sol";
 import {FROST} from "src/FROST.sol";
 import {Schnorr} from "src/utils/cryptography/Schnorr.sol";
-import {Secp256k1} from "src/utils/cryptography/Secp256k1.sol";
 
 contract SchnorrTest is Test {
     function test_IsValidPublicKey() public pure {
@@ -28,7 +28,7 @@ contract SchnorrTest is Test {
                 0x3D46AAE46A6F4DCAACFE1578992912987E8163D89AE03ADB5A15889213AB2B8C
             )
         );
-        // invalid because `publicKeyX < Secp256k1.N` is not satisfied
+        // invalid because `publicKeyX < StdSecp256k1.N` is not satisfied
         assertFalse(
             Schnorr.isValidPublicKey(
                 0xFFFFFFFFFFFFFFFFFFFFFFFFFFFFFFFEBAAEDCE6AF48A03BBFD25E8CD0364141,
@@ -51,15 +51,15 @@ contract SchnorrTest is Test {
 
         uint256 signatureCommitmentX = 0xDF70C2D9D0BC0711BD338F95527A4545F8BB3530B3A90E07B34DF5B0F298DED1;
         uint256 signatureCommitmentY = 0xA84975B1488E6EA60530A3BDB74B2E7C9F0217769CBF0F2565744A353B919554;
-        assertTrue(Secp256k1.isOnCurve(signatureCommitmentX, signatureCommitmentY));
+        assertTrue(StdSecp256k1.isOnCurve(signatureCommitmentX, signatureCommitmentY));
 
         uint256 signatureZ = 0xB164EC237AF7EA1AF309EBDB6AA9588FCB821FB1E3AD32315A95D59A7F0A4600;
-        assertTrue(signatureZ % Secp256k1.N != 0);
+        assertTrue(signatureZ % StdSecp256k1.N != 0);
 
         bytes32 messageHash = bytes32(uint256(0x4141414141414141414141414141414141414141414141414141414141414141));
         (uint256 memPtr, uint256 challenge) =
             FROST.computeChallenge(publicKeyX, publicKeyY, signatureCommitmentX, signatureCommitmentY, messageHash);
-        assertTrue(challenge % Secp256k1.N != 0);
+        assertTrue(challenge % StdSecp256k1.N != 0);
 
         assertTrue(
             Schnorr.verifySignature(

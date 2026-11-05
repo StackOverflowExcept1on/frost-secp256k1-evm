@@ -1,9 +1,9 @@
 // SPDX-License-Identifier: MIT
-pragma solidity ^0.8.37;
+pragma solidity ^0.8.38;
 
 import {FROST} from "./FROST.sol";
 import {ChaChaRngOffchain} from "./utils/cryptography/ChaChaRngOffchain.sol";
-import {Secp256k1} from "./utils/cryptography/Secp256k1.sol";
+import {StdSecp256k1} from "forge-std/StdSecp256k1.sol";
 import {Vm} from "forge-std/Vm.sol";
 
 /**
@@ -42,7 +42,7 @@ library FROSTOffchain {
      */
     function signingKeyFromScalar(uint256 scalar) internal pure returns (SigningKey) {
         // forge-lint: disable-next-item(custom-errors)
-        require(Secp256k1.isValidNonZeroScalar(scalar));
+        require(StdSecp256k1.isValidNonZeroScalar(scalar));
         return SigningKey.wrap(scalar);
     }
 
@@ -77,7 +77,7 @@ library FROSTOffchain {
         (, uint256 challenge) =
             FROST.computeChallenge(publicKey.publicKeyX, publicKey.publicKeyY, R.publicKeyX, R.publicKeyY, messageHash);
 
-        uint256 z = addmod(k, mulmod(challenge, rawSigningKey, Secp256k1.N), Secp256k1.N);
+        uint256 z = addmod(k, mulmod(challenge, rawSigningKey, StdSecp256k1.N), StdSecp256k1.N);
 
         return (R.publicKeyX, R.publicKeyY, z);
     }

@@ -1,5 +1,5 @@
 // SPDX-License-Identifier: MIT
-pragma solidity ^0.8.37;
+pragma solidity ^0.8.38;
 
 import {Memory} from "../Memory.sol";
 
@@ -16,9 +16,9 @@ library ECDSA {
      *          will be reduced to valid scalar (can be zero scalar).
      * @param v Recovery ID, can be 27 or 28.
      *          Point `R(x, y)` has `yParity = v - 27`, `y` is calculated from `yParity`.
-     * @param r Non-zero scalar r, must be in `[1, Secp256k1.N)` and `x = r` must be on curve.
+     * @param r Non-zero scalar r, must be in `[1, StdSecp256k1.N)` and `x = r` must be on curve.
      *          Point `R(x, y)` has coordinate `x = r`.
-     * @param s Non-zero scalar s, must be in `[1, Secp256k1.N)`.
+     * @param s Non-zero scalar s, must be in `[1, StdSecp256k1.N)`.
      * @return recovered 160-bit Ethereum address of `Q` point.
      * @dev If `v, r, s` do not satisfy above conditions, then `recovered = 0`
      */

@@ -1,13 +1,13 @@
 // SPDX-License-Identifier: MIT
-pragma solidity ^0.8.37;
+pragma solidity ^0.8.38;
 
 /**
  * @dev Transpiled library for verifying `FROST-secp256k1-KECCAK256` signatures.
  */
 library TranspiledFROST {
     /**
-     * @dev Checks if public key `(x, y)` is on curve and that `x < Secp256k1.N`.
-     *      It also checks that `x % Secp256k1.N != 0`.
+     * @dev Checks if public key `(x, y)` is on curve and that `x < StdSecp256k1.N`.
+     *      It also checks that `x % StdSecp256k1.N != 0`.
      * @param publicKeyX Public key x.
      * @param publicKeyY Public key y.
      * @return _isValidPublicKey `true` if public key is valid, `false` otherwise.
@@ -43,9 +43,9 @@ library TranspiledFROST {
      * @dev Verifies `FROST-secp256k1-KECCAK256` signature by formula $zG - cX = R$.
      *      - Public key ($X$) must be checked with `FROST.isValidPublicKey(publicKeyX, publicKeyY)`.
      *      - Signature R ($R$) must be on curve.
-     *      - Signature Z ($z$) must be in `[1, Secp256k1.N)`.
+     *      - Signature Z ($z$) must be in `[1, StdSecp256k1.N)`.
      *      - Challenge ($c$) is computed via `FROST.computeChallenge(...)`,
-     *        must be in `[1, Secp256k1.N)`.
+     *        must be in `[1, StdSecp256k1.N)`.
      * @param publicKeyX Public key x.
      * @param publicKeyY Public key y.
      * @param signatureCommitmentX Signature commitment R x.
